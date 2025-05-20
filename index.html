@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tower Defense Bullet Hell</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Level Selector -->
+  <div id="levelSelector">
+    <h1>Select Level</h1>
+    <button onclick="loadLevel(1)">Level 1</button>
+    <button onclick="loadLevel(2)">Level 2</button>
+  </div>
+
+  <!-- Game Container -->
+  <div id="gameContainer" style="display:none;">
+
+    <div id="towerTooltip"></div>
+
+    <!-- Top HUD Bar -->
+    <div id="hudBar">
+      <span id="goldDisplay">💰 100</span>
+      <span id="waveDisplay">Wave 1</span>
+      <span id="livesDisplay">❤️ 10</span>
+      <div id="rankDisplay" style="font-family: monospace; font-size: 14px; color: white;">🏅 Rank 1</div>
+      <button id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+      <button id="speedToggleBtn" onclick="toggleSpeed()">⏩ 2X Speed: OFF</button>
+    </div>
+
+    <!-- Canvas for Game -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Bottom Tower Selector Panel -->
+    <div id="towerPanel" class="tower-panel">
+      <button data-type="basic">💠<br><small>$50</small></button>
+      <button data-type="spread">🔶<br><small>$60</small></button>
+      <button data-type="sniper">🎯<br><small>$80</small></button>
+      <button data-type="splash">💥<br><small>$70</small></button>
+      <button data-type="poison">☣️<br><small>$60</small></button>
+    </div>
+
+    <!-- Start Wave Button -->
+    <button id="startWaveBtn">Start Wave</button>
+
+    <!-- Overlay Messages (Game Over / Level Complete) -->
+    <div id="overlayMessage">
+      <div id="overlayText"></div>
+      <button id="restartBtn">Restart</button>
+    </div>
+  </div>
+
+  <!-- Howler.js for audio support -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+  <!-- Game Logic -->
+  <script src="Particle.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+/* Global Reset */
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #111;
+    color: #fff;
+    font-family: monospace;
+    overflow: hidden;
+    height: 100%;
+    width: 100%
+}
+
+button {
+    font-family: monospace;
+    font-size: 16px;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    margin: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+button:hover {
+    background: #666;
+}
+
+#levelSelector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #222, #111);
+}
+#levelSelector h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+#levelSelector button {
+    width: 200px;
+}
+
+/* Game UI */
+#gameContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+/* Top HUD Bar */
+#hudBar {
+    height: 60px;
+  width: 100%;
+  background: #222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+/* Game canvas */
+#gameCanvas {
+  display: block;
+  position: absolute;
+  top: 60px; /* 👈 Exactly matches HUD height */
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 60px); /* 👈 Remaining height */
+  background: #000;
+  z-index: 1;
+}
+
+/* Tower Selection Panel */
+#towerPanel {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(50, 50, 50, 0.9);
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #888;
+    max-height: 80vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+#towerPanel button.selected {
+    outline: 2px solid yellow;
+    background-color: #666;
+}
+
+.towerOption {
+    width: 60px;
+    height: 60px;
+    background: #444;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.towerOption:hover {
+    transform: scale(1.05);
+    background-color: #666;
+}
+.towerOption.selected {
+    outline: 2px solid yellow;
+}
+
+.towerOption .icon {
+    width: 100%;
+    height: 60%;
+    background: gray;
+    margin-bottom: 4px;
+}
+
+.towerOption .label {
+    font-size: 12px;
+    color: white;
+}
+
+.towerOption .cost {
+    font-size: 10px;
+    color: gold;
+}
+
+/* Overlay message */
+#overlayMessage {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1000;
+}
+
+#overlayText {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+#restartBtn, #speedToggleBtn, #pauseToggleBtn {
+    margin: 10px;
+}
+
+#startWaveBtn{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px 40px;
+    font-size: 20px;
+    background: #000;
+    border: none;
+    cursor: pointer;
+    display: none;
+    z-index: 10;
+}
+
+#towerTooltip {
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    display:none; 
+    position:absolute; 
+    z-index:1000; 
+    background:#222; 
+    color:white; 
+    padding:10px; 
+    border-radius:6px; 
+    font-family:monospace; 
+    font-size:12px; 
+    max-width:250px;
+}
+
