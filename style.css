@@ -95,26 +95,29 @@ button:hover {
 #gameCanvas {
   display: block;
   position: absolute;
-  top: 60px; /* 👈 Exactly matches HUD height */
+  top: 40px;
   left: 0;
-  width: 100vw;
-  height: calc(100vh - 60px); /* 👈 Remaining height */
+  width: 100%;
+  height: calc(100dvh - 40px - 70px); /* HUD and towerPanel heights */
   background: #000;
   z-index: 1;
 }
 
+
 /* Tower Selection Panel */
 .tower-panel {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
+  height: 76px;
   display: flex;
   justify-content: space-around;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.85);
   padding: 6px 4px;
   z-index: 1000;
 }
+
 
 .tower-panel button {
   flex: 1;

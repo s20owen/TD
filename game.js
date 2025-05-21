@@ -32,9 +32,12 @@ const MAPS = {
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P28',  'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P29',  'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P30',  'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'E',  'G'],
-         
-
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P31',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P32',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P33',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P34',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P35',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'E',  'G']
         ],
         waves: 
         generateWaves(30) // dynamically generating waves
@@ -63,6 +66,10 @@ const MAPS = {
 
 // Toggle dev panel on/off
 let showDebugStats = false; 
+
+let mapOffsetX = 0;
+let mapOffsetY = 0;
+
 
 // Required UI Elements
 const canvas = document.getElementById("gameCanvas");
@@ -433,8 +440,24 @@ document.querySelectorAll("#towerPanel button").forEach(btn => {
     });
 
     btn.addEventListener("mousemove", (e) => {
-        tooltip.style.left = `${e.pageX - tooltip.offsetWidth - 10}px`;
-        tooltip.style.top = `${e.pageY + 10}px`;
+        tooltip.style.left = `${e.pageX - tooltip.offsetWidth / 2}px`;
+        tooltip.style.top = `${e.pageY - tooltip.offsetHeight - 12}px`;
+        
+        // Prevent going off left edge
+        if (parseInt(tooltip.style.left) < 4) {
+          tooltip.style.left = "4px";
+        }
+        
+        // Prevent going off right edge
+        const rightEdge = e.pageX + tooltip.offsetWidth / 2;
+        const screenWidth = window.innerWidth;
+        if (rightEdge > screenWidth - 4) {
+          tooltip.style.left = `${screenWidth - tooltip.offsetWidth - 4}px`;
+        }
+        
+        if (parseInt(tooltip.style.top) < 0) {
+            tooltip.style.top = "4px"; // minimal margin from top
+        }
     });
 
     btn.addEventListener("mouseleave", () => {
@@ -548,11 +571,19 @@ function calculateTileSize() {
 }
 
 function resizeCanvas() {
-    const uiHeight = 180; // Reserve space at bottom for UI
+    const hud = document.getElementById("hudBar");
+    const panel = document.getElementById("towerPanel");
+    const hudHeight = hud?.offsetHeight || 40;
+    const panelHeight = panel?.offsetHeight || 70;
+
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - uiHeight;
+    canvas.height = window.innerHeight - hudHeight - panelHeight;
+
     calculateTileSize();
 }
+
+
+
 
 window.addEventListener('resize', resizeCanvas);
 
