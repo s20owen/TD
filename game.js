@@ -22,16 +22,19 @@ const towerTypes = ["basic", "spread", "sniper", "splash", "poison"];
 const MAPS = {
     1: {
         map: [  
-          ['S',   'P1', 'P2', 'P3', 'P4', 'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G' ],
-          ['G',   'G',  'G',  'G',  'P5', 'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G' ],
-          ['T',   'G',  'G',  'G',  'P6', 'P7', 'P8', 'P9', 'P10','G',  'G',  'G',  'G',  'G',  'G' ],
-          ['G',   'G',  'G',  'G',  'G',  'G',  'G',  'G',  'P11','G',  'G',  'G',  'G',  'G',  'G' ],
-          ['G',   'G',  'G',  'P23','P24','P25','P26','P27','P12','P28','P29','P30','P31','G',  'G' ],
-          ['G',   'G',  'G',  'P22','G',  'G',  'G',  'G',  'P13','G',  'G',  'G',  'P32','G',  'G' ],
-          ['G',   'G',  'G',  'P21','G',  'G',  'G',  'G',  'P14','G',  'G',  'G',  'P33','G',  'G' ],
-          ['G',   'G',  'G',  'P20','P19','P18','P17','P16','P15','G',  'G',  'G',  'P34','G',  'G' ],
-          ['G',   'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'G',  'T',  'P35','T',  'G' ],
-          ['T',   'T',  'T',  'T',  'T',  'T',  'T',  'T',  'T',  'T',  'T',  'T',  'E',  'T',  'T' ]
+         ['P1', 'P2',  'P3',  'P4',  'P5',  'P6',  'G',    'G',    'G'],
+         ['G',  'G',   'G',   'G',   'G',   'P7',  'G',    'G',    'G'],
+         ['G',  'G',   'G',   'G',   'G',   'P8',  'G',    'G',    'G'],
+         ['G',  'P19', 'P20', 'P21', 'P22', 'P9',  'P23',  'P24',  'G'],
+         ['G',  'P18', 'G',   'G',   'G',   'P10', 'G',    'P25',  'G'],
+         ['G',  'P17', 'G',   'G',   'G',   'P11', 'G',    'P26',  'G'],
+         ['G',  'P16', 'P15', 'P14', 'P13', 'P12', 'G',    'P27',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P28',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P29',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P30',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P31',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P32',  'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'E',    'G']
 
         ],
         waves: 
@@ -59,13 +62,8 @@ const MAPS = {
     }
 };
 
-// FPS
-let fps = 0;
-let lastFrameTime = performance.now();
-let frameCount = 0;
-let fpsUpdateTime = performance.now();
 // Toggle dev panel on/off
-let showDebugStats = true; 
+let showDebugStats = false; 
 
 // Required UI Elements
 const canvas = document.getElementById("gameCanvas");
@@ -142,7 +140,7 @@ function updateRankDisplay() {
   const rankEl = document.getElementById("rankDisplay");
   if (rankEl) {
     const rankData = rankTable[playerRank - 1];
-    rankEl.textContent = `🏅 Rank ${rankData.level}: ${rankData.title} (${playerPoints}/${rankTable[playerRank]?.points || "MAX"})`;
+    rankEl.textContent = `Rank ${rankData.level}: ${rankData.title} (${playerPoints}/${rankTable[playerRank]?.points || "MAX"})`;
   }
 }
 
@@ -551,9 +549,9 @@ function calculateTileSize() {
 }
 
 function resizeCanvas() {
-    const hudHeight = 60;
+    const uiHeight = 180; // Reserve space at bottom for UI
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight - hudHeight;
+    canvas.height = window.innerHeight - uiHeight;
     calculateTileSize();
 }
 
@@ -1431,27 +1429,42 @@ function update() {
     updateHUD();
 }
 
+// FPS
+const FIXED_TIMESTEP = 1000 / 60; // 60 updates per second
+let lastTime = performance.now();
+let accumulator = 0;
+let frameCount = 0;
+let fpsUpdateTime = performance.now();
+let fps = 0;
+
 function gameLoop() {
     const now = performance.now();
+    const delta = now - lastTime;
+    lastTime = now;
+    accumulator += delta;
     frameCount++;
-    
-     // Update FPS every second
+
+    // Update FPS once per second
     if (now - fpsUpdateTime >= 1000) {
         fps = frameCount;
         frameCount = 0;
         fpsUpdateTime = now;
     }
-    soundPlayBudget = MAX_SOUNDS_PER_FRAME;
 
-    if (!paused) {
-        for (let i = 0; i < gameSpeed; i++) {
-            update();
-        }
+    // Allow up to 5 catch-up updates max per frame to avoid spiral of death
+    let updates = 0;
+    while (accumulator >= FIXED_TIMESTEP && updates < 5) {
+        for (let i = 0; i < gameSpeed; i++) update(); // Handle 1x or 2x speed
+        accumulator -= FIXED_TIMESTEP;
+        updates++;
     }
 
+    soundPlayBudget = MAX_SOUNDS_PER_FRAME;
     draw();
+
     requestAnimationFrame(gameLoop);
 }
+
 
 
 function startNextWave() {
@@ -1573,13 +1586,14 @@ function loadLevel(level) {
     hoveredTower = null;
     
     // DEV: Start at a specific wave for testing
+    /*
     const DEV_START_WAVE = 20; // ← Change this to whatever wave you want to test
     const DEV_START_GOLD = 9999;
     gold = DEV_START_GOLD;
     if (DEV_START_WAVE > 1) {
         wave = DEV_START_WAVE - 1;
         seenEnemyTypes = new Set(); // Clear enemy types to avoid intros
-    }
+    }*/
     
 
     startWaveBtn.style.display = "block";
@@ -1683,16 +1697,17 @@ function hideTowerActionUI() {
     }
 }
 
+
 function toggleSpeed() {
     gameSpeed = gameSpeed === 1 ? 2 : 1;
-    document.getElementById("speedToggleBtn").textContent = gameSpeed === 2 ? "⏩ 2X : ON" : "⏩ 2X : OFF";
+    document.getElementById("speedToggleBtn").textContent = gameSpeed === 2 ? "⏩" : "⏩";
 }
 
 function togglePause() {
     paused = !paused;
     const btn = document.getElementById("pauseToggleBtn");
     if (btn) {
-        btn.textContent = paused ? "▶️ Resume" : "⏸ Pause";
+        btn.textContent = paused ? "▶️" : "⏸";
     }
 }
 

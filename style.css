@@ -16,7 +16,7 @@ button {
     background: #444;
     color: white;
     border: none;
-    padding: 10px 16px;
+    padding: 10px 12px;
     margin: 4px;
     border-radius: 6px;
     cursor: pointer;
@@ -52,19 +52,44 @@ button:hover {
 
 /* Top HUD Bar */
 #hudBar {
-    height: 60px;
-  width: 100%;
-  background: #222;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  box-sizing: border-box;
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
+  width: 100%;
+  height: 40px;
+  background: #111;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  box-sizing: border-box;
+  z-index: 1000;
+  font-family: monospace;
+  font-size: 13px;
+  gap: 8px;
 }
+
+#hudBar span,
+#hudBar #rankDisplay {
+  flex: 1;
+  text-align: center;
+}
+
+#rankDisplay{
+    margin-top: 4px;
+}
+
+#hudBar button {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+
 
 /* Game canvas */
 #gameCanvas {
@@ -79,22 +104,38 @@ button:hover {
 }
 
 /* Tower Selection Panel */
-#towerPanel {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(50, 50, 50, 0.9);
-    padding: 10px;
-    border-radius: 10px;
-    border: 2px solid #888;
-    max-height: 80vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
+.tower-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 6px 4px;
+  z-index: 1000;
 }
+
+.tower-panel button {
+  flex: 1;
+  max-width: 70px;
+  height: 60px;
+  font-size: 16px;
+  text-align: center;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.tower-panel button small {
+  display: block;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
 
 #towerPanel button.selected {
     outline: 2px solid yellow;
