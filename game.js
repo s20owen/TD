@@ -35,9 +35,9 @@ const MAPS = {
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P31',  'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P32',  'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P33',  'G', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P34',  'G', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'P35',  'T', 'G', 'G', 'G'],
-         ['T',  'T',   'T',   'T',   'T',   'T',   'T',    'E',    'T', 'T', 'T', 'T']
+         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'P34',  'T', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'E',    'T', 'G', 'G', 'G']
+       
          
         ],
         waves: 
@@ -82,7 +82,7 @@ const achievementBox = document.getElementById("achievements");
 // Game Variables
 let pausedForIntro = false;
 let TILE_SIZE = 64;
-let wave = 0, gold = 100, lives = 10;
+let wave = 0, gold = 120, lives = 10;
 let towers = [], enemies = [], bullets = [], splitQueue = [];
 let gameWon = false, gameOver = false, paused = false, isWaveActive = false;
 let waveQueue = [], waveTimer = 0, currentMap = [], waves = [], enemyPath = [];
@@ -115,7 +115,7 @@ const rankTable = [
   { level: 17, title: "Overseer", points: 14800 },
   { level: 18, title: "Commander", points: 16150 },
   { level: 19, title: "Mythic", points: 17550 },
-  { level: 20, title: "Godlike", points: 19000 }
+  { level: 20, title: "Godlike", points: 20000 }
 ];
 
 let playerPoints = parseInt(localStorage.getItem("playerPoints")) || 0;
@@ -295,11 +295,11 @@ function updateTowerButtons() {
 
 // Tower Cost
 const towerCosts = {
-    basic: 50,
-    spread: 60,
-    sniper: 80,
-    poison: 60,
-    splash: 70
+    basic: 100,
+    spread: 120,
+    sniper: 150,
+    poison: 200,
+    splash: 300
 };
 
 const towerInfo = {
@@ -426,11 +426,11 @@ document.querySelectorAll("#towerPanel button").forEach(btn => {
         const info = towerInfo[type];
         if (!info) return;
 
-        let html = `<strong style="font-size:13px">${info.name}</strong><br>`;
+        let html = `<strong style="font-size:12px">${info.name}</strong><br>`;
         html += `Cost: $${info.cost}<br>`;
         html += `Unlocks at Rank: ${info.unlock}<br>`;
         html += `<em>${info.description}</em><br><br>`;
-        html += `<u>Upgrades:</u><ul style="padding-left:16px;">`;
+        html += `<u>Upgrades:</u><ul style="padding-left:12px;">`;
         info.upgrades.forEach(up => html += `<li>${up}</li>`);
         html += `</ul>`;
 
@@ -624,7 +624,7 @@ class Tower {
             if (target) {
                 bullets.push(getPoisonBullet(this.x, this.y, target, this.level));
                 queuePoisonSound?.(); // if sound logic added
-                this.cooldown = 45;
+                this.cooldown = 50;
             }
         }
 
@@ -640,7 +640,7 @@ class Tower {
             if (target) {
                 bullets.push(getBullet(this.x, this.y, target, this.level));
                 queueHitSound(); // 🔊 just queue
-                this.cooldown = 90;
+                this.cooldown = 70;
             }
         } else if (this.type === "splash") {
             const target = enemies.find(inRange);
@@ -676,7 +676,7 @@ class Tower {
                 }
 
                 if (fired) queueHitSound();
-                this.cooldown = 50;
+                this.cooldown = 45;
             }
         }
 
