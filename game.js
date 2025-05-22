@@ -1730,22 +1730,31 @@ canvas.addEventListener("click", (e) => {
 
     const cost = towerCosts[selectedTowerType];
     if (gold >= cost) {
-        const tileX = Math.floor(x / TILE_SIZE);
-        const tileY = Math.floor(y / TILE_SIZE);
-        const centerX = tileX * TILE_SIZE + TILE_SIZE / 2;
-        const centerY = tileY * TILE_SIZE + TILE_SIZE / 2;
+    const tileX = Math.floor(x / TILE_SIZE);
+    const tileY = Math.floor(y / TILE_SIZE);
+    const tileType = currentMap[tileY]?.[tileX]; // ✅ Fix: define tileType here
 
-        towers.push(new Tower(centerX, centerY, selectedTowerType));
-        gold -= cost;
+    // Prevent placing on path tiles
+    if (["P", "C", "S", "E", "T"].includes(tileType) || /^P\d+$/.test(tileType)) {
+        //addFloatingMessage("❌ Can't build on path!", x, y, "orange");
+        return;
+    }
 
-        // Clear selection after placing
-        selectedTowerType = null;
-        document.querySelectorAll("#towerPanel button").forEach(b => b.classList.remove("selected"));
-        selectedTower = null;
-        hideTowerActionUI();
+    const centerX = tileX * TILE_SIZE + TILE_SIZE / 2;
+    const centerY = tileY * TILE_SIZE + TILE_SIZE / 2;
+
+    towers.push(new Tower(centerX, centerY, selectedTowerType));
+    gold -= cost;
+
+    // Clear selection after placing
+    selectedTowerType = null;
+    document.querySelectorAll("#towerPanel button").forEach(b => b.classList.remove("selected"));
+    selectedTower = null;
+    hideTowerActionUI();
     } else {
         addFloatingMessage("Not enough gold!", x, y, "red");
     }
+
 });
 
 
