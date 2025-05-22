@@ -41,7 +41,7 @@ const MAPS = {
          
         ],
         waves: 
-        generateWaves(30) // dynamically generating waves
+        generateWaves(50) // dynamically generating waves
     },
     2: {
         map: [
@@ -82,7 +82,7 @@ const achievementBox = document.getElementById("achievements");
 // Game Variables
 let pausedForIntro = false;
 let TILE_SIZE = 64;
-let wave = 0, gold = 120, lives = 10;
+let wave = 0, gold = 250, lives = 10;
 let towers = [], enemies = [], bullets = [], splitQueue = [];
 let gameWon = false, gameOver = false, paused = false, isWaveActive = false;
 let waveQueue = [], waveTimer = 0, currentMap = [], waves = [], enemyPath = [];
@@ -91,6 +91,7 @@ let selectedTowerType = null, selectedTower = null, hoveredTower = null;
 let waveIntroQueue = [], introMessage = null, introTimer = 0, bossWarning = null;
 let totalGoldEarned = 0, enemyKillCount = 0, towerActionUI = null;
 let gameSpeed = 1;
+const damageNumberPool = [];
 
 const particlePool = new ParticlePool(100); // Preallocate 100 particles
 
@@ -201,7 +202,7 @@ function generateWaves(totalWaves = 50) {
         }
 
         // Add healers every 5th wave
-        if (i % 5 === 0) {
+        if (i % 6 === 0) {
             const healers = 2 + Math.floor(i / 5);
             for (let j = 0; j < healers; j++) enemyQueue.push("healer");
         }
@@ -223,7 +224,7 @@ function generateWaves(totalWaves = 50) {
             enemyQueue.push("boss");
         }
         // mega boss
-        if (i % 30 === 0) {
+        if (i % 40 === 0) {
           enemyQueue.push("megaBoss");
         }
 
@@ -574,17 +575,14 @@ function calculateTileSize() {
 function resizeCanvas() {
     const hud = document.getElementById("hudBar");
     const panel = document.getElementById("towerPanel");
-    const hudHeight = hud?.offsetHeight || 40;
-    const panelHeight = panel?.offsetHeight || 70;
+    const hudHeight = hud?.offsetHeight || 60;
+    const panelHeight = panel?.offsetHeight || 76;
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight - hudHeight - panelHeight;
 
     calculateTileSize();
 }
-
-
-
 
 window.addEventListener('resize', resizeCanvas);
 
@@ -721,8 +719,6 @@ class Tower {
     }
 }
 
-
-
 class Bullet {
     constructor(x, y, target, level, angle = null) {
         this.reset(x, y, target, level, angle);
@@ -760,6 +756,8 @@ class Bullet {
                 spawnExplosion(this.target.x, this.target.y);
                 this.handleEnemyKill(this.target);
                 this.markForRelease();
+                spawnDamageNumber(this.target.x, this.target.y - 10, `-${this.damage}`, "yellow");
+
             } else {
                 this.x += (dx / dist) * this.speed;
                 this.y += (dy / dist) * this.speed;
@@ -783,6 +781,7 @@ class Bullet {
                     spawnExplosion(enemy.x, enemy.y);
                     this.handleEnemyKill(enemy);
                     this.markForRelease();
+                    spawnDamageNumber(enemy.x, enemy.y - 10, `-${damage}`, "yellow");
                     break;
                 }
             }
@@ -1112,112 +1111,6 @@ class Enemy {
 
 }
 
-/*
-function findPath(map) {
-    const dirs = [[0, 1], [1, 0], [0, -1], [-1, 0]];
-    const visited = new Set();
-    const path = [];
-    let start;
-
-    function isPathTile(tile) {
-        return tile === 'P' || tile === 'C'; // Allow curves as part of path
-    }
-
-    for (let y = 0; y < map.length; y++) {
-        for (let x = 0; x < map[y].length; x++) {
-            if (isPathTile(map[y][x])) {
-                start = { x, y };
-                break;
-            }
-        }
-        if (start) break;
-    }
-
-    function key(x, y) {
-        return `${x},${y}`;
-    }
-
-    function dfs(x, y) {
-        visited.add(key(x, y));
-        path.push({ x: x * TILE_SIZE + TILE_SIZE / 2, y: y * TILE_SIZE + TILE_SIZE / 2 });
-
-        for (let [dx, dy] of dirs) {
-            const nx = x + dx, ny = y + dy;
-            if (
-                ny >= 0 && ny < map.length &&
-                nx >= 0 && nx < map[ny].length &&
-                isPathTile(map[ny][nx]) &&
-                !visited.has(key(nx, ny))
-            ) {
-                dfs(nx, ny);
-                break;
-            }
-        }
-    }
-
-    if (start) dfs(start.x, start.y);
-    return path;
-}
-*/
-/*
-function findPath(map) {
-    const rows = map.length;
-    const cols = map[0].length;
-
-    const isPathTile = (x, y) =>
-        x >= 0 && y >= 0 && x < cols && y < rows &&
-        ['S', 'P', 'C', 'E'].includes(map[y][x]);
-
-    const directions = [
-        { dx: 0, dy: -1 }, // up
-        { dx: 1, dy: 0 },  // right
-        { dx: 0, dy: 1 },  // down
-        { dx: -1, dy: 0 }  // left
-    ];
-
-    let start = null;
-    for (let y = 0; y < rows && !start; y++) {
-        for (let x = 0; x < cols; x++) {
-            if (map[y][x] === 'S') {
-                start = { x, y };
-                break;
-            }
-        }
-    }
-
-    if (!start) return [];
-
-    const key = (x, y) => `${x},${y}`;
-    let longestPath = [];
-
-    function dfs(x, y, path, visited) {
-        const k = key(x, y);
-        if (visited.has(k)) return;
-        visited.add(k);
-        path.push({ x: x * TILE_SIZE + TILE_SIZE / 2, y: y * TILE_SIZE + TILE_SIZE / 2 });
-
-        if (map[y][x] === 'E') {
-            if (path.length > longestPath.length) {
-                longestPath = [...path];
-            }
-        } else {
-            for (let { dx, dy } of directions) {
-                const nx = x + dx;
-                const ny = y + dy;
-                if (isPathTile(nx, ny)) {
-                    dfs(nx, ny, path, new Set(visited));
-                }
-            }
-        }
-
-        path.pop();
-    }
-
-    dfs(start.x, start.y, [], new Set());
-
-    return longestPath;
-}
-*/
 function findPath(map) {
     const rows = map.length;
     const cols = map[0].length;
@@ -1314,7 +1207,7 @@ function draw() {
             ctx.measureText("⚠ New Enemy Incoming!").width,
             ctx.measureText(fullText).width
         );
-        const boxWidth = textWidth + 40;
+        const boxWidth = textWidth + 20;
         const boxHeight = 100;
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
@@ -1336,8 +1229,8 @@ function draw() {
 
     // FPS Counter
     ctx.fillStyle = "white";
-    ctx.font = "14px monospace";
-    ctx.fillText(`FPS: ${fps}`, 10, 20);
+    ctx.font = "12px monospace";
+    ctx.fillText(`FPS: ${fps}`, 356, 20);
 
     // DEV DEBUG PANEL
     if (showDebugStats) {
@@ -1355,6 +1248,17 @@ function draw() {
         ctx.fillText(`Spread Pool: ${spreadBulletPool.length}`, 12, 135);
 
     }
+    
+        damageNumbers.forEach(d => {
+            ctx.save();
+            ctx.globalAlpha = d.opacity;
+            ctx.fillStyle = d.color || "yellow";
+            ctx.font = "12px monospace";
+            ctx.fillText(d.text, d.x, d.y);
+            ctx.restore();
+        });
+
+
 }
 
 
@@ -1410,14 +1314,21 @@ function update() {
         }
     });
     splitQueue = [];
-/*
+
     // Damage numbers
     damageNumbers.forEach(d => {
         d.y -= 0.5;
         d.opacity -= 1 / d.lifetime;
+        d.lifetime--;
+
+        if (d.lifetime <= 0) {
+            damageNumberPool.push(d);
+        }
     });
-    damageNumbers = damageNumbers.filter(d => d.opacity > 0);
-*/
+
+damageNumbers = damageNumbers.filter(d => d.lifetime > 0);
+
+
     // Floating messages
     floatingMessages.forEach(msg => {
         msg.y -= 0.5;
@@ -1605,7 +1516,6 @@ function loadLevel(level) {
     bullets = [];
     splitQueue = [];
     wave = 0;
-    gold = 100;
     lives = 10;
     isWaveActive = false;
     gameOver = false;
@@ -1649,13 +1559,13 @@ function unlockAchievement(key, message) {
 
 function updateHUD() {
     document.getElementById("goldDisplay").textContent = `💰 ${gold}`;
-    document.getElementById("waveDisplay").textContent = `Wave ${wave}`;
+    document.getElementById("waveDisplay").textContent = `Wave ${wave + 1} / ${waves.length}`;
     document.getElementById("livesDisplay").textContent = `❤️ ${lives}`;
 }
 
 function towerUpgradeCost(tower) {
     const base = towerCosts[tower.type] || 50;
-    return Math.floor(base * (0.5 + tower.level * 0.5));
+    return Math.floor(base * (0.5 + tower.level * 0.6));
 }
 
 function showOverlay(message) {
@@ -1674,6 +1584,17 @@ function spawnExplosion(x, y, count = 5) {
         const color = colors[Math.floor(Math.random() * colors.length)];
         particlePool.spawn(x, y, color);
     }*/
+}
+
+function spawnDamageNumber(x, y, text, color = "yellow", lifetime = 30) {
+    const dn = damageNumberPool.pop() || {};
+    dn.x = x;
+    dn.y = y;
+    dn.text = text;
+    dn.opacity = 1;
+    dn.lifetime = lifetime;
+    dn.color = color;
+    damageNumbers.push(dn);
 }
 
 function showTowerActionUI(tower) {
