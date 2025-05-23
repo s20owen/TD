@@ -537,7 +537,7 @@ function releasePoisonBullet(bullet) {
 function getSpreadBullet(x, y, level, angle) {
     const bullet = spreadBulletPool.pop() || new Bullet(x, y, null, level, angle);
     bullet.reset(x, y, null, level, angle);
-    bullet.speed = 3; // 🔹 Make spread slower
+    bullet.speed = 4; // 🔹 Make spread slower
     bullet.maxDistance = TILE_SIZE * 3;
     return bullet;
 }
@@ -757,7 +757,7 @@ class Bullet {
                 spawnExplosion(this.target.x, this.target.y);
                 this.handleEnemyKill(this.target);
                 this.markForRelease();
-                spawnDamageNumber(this.target.x, this.target.y - 10, `-${this.damage}`, "yellow");
+                
 
             } else {
                 this.x += (dx / dist) * this.speed;
@@ -782,7 +782,7 @@ class Bullet {
                     spawnExplosion(enemy.x, enemy.y);
                     this.handleEnemyKill(enemy);
                     this.markForRelease();
-                    spawnDamageNumber(enemy.x, enemy.y - 10, `-${damage}`, "yellow");
+                    
                     break;
                 }
             }
@@ -874,6 +874,7 @@ class SplashBullet {
                     if (enemy.type === "stealth" && this.level < 2) continue;
                     enemy.health -= this.damage;
                     spawnExplosion(enemy.x, enemy.y);
+                    //spawnDamageNumber(enemy.x, enemy.y - 10, `-${this.damage}`, "yellow");
 
                     if (enemy.health <= 0) {
                         handleEnemyKill(enemy.type);
@@ -942,6 +943,7 @@ class PoisonBullet {
             });
 
             spawnExplosion(this.target.x, this.target.y, 4);
+            //spawnDamageNumber(this.target.x, this.target.y - 10, `-${this.damage}`, "lime");
 
             this.hit = true;
             releasePoisonBullet(this); // ✅ release it
@@ -1042,6 +1044,7 @@ class Enemy {
                         }
 
                         spawnExplosion(this.x, this.y, 5);
+                        //spawnDamageNumber(this.x, this.y - 10, `-${effect.damage}`, "lime");
                         releaseEnemy(this); // ✅ Pool this enemy
                         return false; // Don't keep processing this effect
                     }
@@ -1231,7 +1234,7 @@ function draw() {
     // FPS Counter
     ctx.fillStyle = "white";
     ctx.font = "12px monospace";
-    ctx.fillText(`FPS: ${fps}`, 356, 20);
+    ctx.fillText(`FPS: ${fps}`, 345, 20);
 
     // DEV DEBUG PANEL
     if (showDebugStats) {
@@ -1613,12 +1616,15 @@ function showTowerActionUI(tower) {
     towerActionUI.style.borderRadius = "6px";
     towerActionUI.style.color = "#fff";
     towerActionUI.style.fontFamily = "monospace";
-    towerActionUI.style.fontSize = "14px";
+    towerActionUI.style.fontSize = "12px";
     towerActionUI.style.zIndex = "1000";
 
     const upgradeBtn = document.createElement("button");
     upgradeBtn.textContent = tower.level >= 5 ? `Max Level (${tower.level})` : `Upgrade ($${upgradeCost})`;
     upgradeBtn.disabled = tower.level >= 5;
+    upgradeBtn.style.fontSize = "12px";
+    upgradeBtn.style.padding = "4px 6px";
+    upgradeBtn.style.margin = "2px 0";
     upgradeBtn.onclick = () => {
         if (gold >= upgradeCost) {
             tower.upgrade();
@@ -1632,6 +1638,9 @@ function showTowerActionUI(tower) {
 
     const sellBtn = document.createElement("button");
     sellBtn.textContent = `Sell (+$${sellValue})`;
+    sellBtn.style.fontSize = "12px";
+    sellBtn.style.padding = "4px 6px";
+    sellBtn.style.margin = "2px 0";
     sellBtn.onclick = () => {
         gold += sellValue;
         towers = towers.filter(t => t !== tower);
