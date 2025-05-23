@@ -13,6 +13,8 @@
     <h1>Select Level</h1>
     <button onclick="loadLevel(1)">Level 1</button>
     <button onclick="loadLevel(2)">Level 2</button>
+    <!-- Inside #levelSelector -->
+    <button id="darkOpsBtn">🕶️ Dark Ops</button>
   </div>
 
   <!-- Game Container -->
@@ -51,6 +53,18 @@
       <button id="restartBtn">Restart</button>
     </div>
   </div>
+  
+  <div id="devMenu" style="display:none; position:fixed; top:50px; left:10px; background:#222; padding:10px; border:1px solid #666; z-index:2000; font-family:monospace;">
+    <h4 style="margin:4px 0; color:black;">🛠️ DEV MODE</h4>
+    <label style="color:white;">Gold: <input type="number" id="devGold" value="9999" style="width:60px;"></label><br>
+    <label style="color:white;">Start Wave: <input type="number" id="devWave" value="1" style="width:60px;"></label><br>
+    <button onclick="applyDevSettings()">✅ Apply</button>
+    <button onclick="placeDevTowers()">🏰 Max Towers</button>
+    <button onclick="resetDevProgress()">🧹 Clear Progress</button>
+    <button onclick="document.getElementById('devMenu').style.display='none'">❌ Close</button>
+  </div>
+
+  
 
   <!-- Howler.js for audio support -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>

@@ -66,6 +66,22 @@ const MAPS = {
     }
 };
 
+// DEV_MODE Panel
+let DEV_MODE = false;
+const DEV_PASSWORD = "secretsauce"; // Change this
+
+document.getElementById("darkOpsBtn").addEventListener("click", () => {
+    const input = prompt("Enter Dev Password:");
+    if (input === DEV_PASSWORD) {
+        DEV_MODE = true;
+        alert("✅ DEV MODE UNLOCKED");
+        showDevMenu();
+    } else {
+        alert("❌ Incorrect password");
+    }
+});
+
+
 // Toggle dev panel on/off
 let showDebugStats = false; 
 
@@ -1234,7 +1250,7 @@ function draw() {
     // FPS Counter
     ctx.fillStyle = "white";
     ctx.font = "12px monospace";
-    ctx.fillText(`FPS: ${fps}`, 345, 20);
+    ctx.fillText(`FPS: ${fps}`, 335, 20);
 
     // DEV DEBUG PANEL
     if (showDebugStats) {
@@ -1618,6 +1634,8 @@ function showTowerActionUI(tower) {
     towerActionUI.style.fontFamily = "monospace";
     towerActionUI.style.fontSize = "12px";
     towerActionUI.style.zIndex = "1000";
+    towerActionUI.style.maxWidth = "120px";
+    
 
     const upgradeBtn = document.createElement("button");
     upgradeBtn.textContent = tower.level >= 5 ? `Max Level (${tower.level})` : `Upgrade ($${upgradeCost})`;
@@ -1773,6 +1791,45 @@ canvas.addEventListener("mousemove", (e) => {
     const y = e.clientY - rect.top;
     hoveredTower = towers.find(t => Math.hypot(t.x - x, t.y - y) < TILE_SIZE / 2) || null;
 });
+
+function showDevMenu() {
+    document.getElementById("devMenu").style.display = "block";
+}
+
+function applyDevSettings() {
+    const goldVal = parseInt(document.getElementById("devGold").value);
+    const waveVal = parseInt(document.getElementById("devWave").value);
+    gold = goldVal;
+    wave = waveVal - 1;
+    seenEnemyTypes.clear();
+    alert("⚙️ Settings applied. Start wave manually.");
+}
+
+function placeDevTowers() {
+    const positions = [
+        { x: 4, y: 4 },
+        { x: 6, y: 6 },
+        { x: 8, y: 8 },
+        { x: 10, y: 5 }
+    ];
+
+    positions.forEach((pos, i) => {
+        const centerX = pos.x * TILE_SIZE + TILE_SIZE / 2;
+        const centerY = pos.y * TILE_SIZE + TILE_SIZE / 2;
+        const type = towerTypes[i % towerTypes.length];
+        const tower = new Tower(centerX, centerY, type);
+        tower.level = 5;
+        towers.push(tower);
+    });
+
+    alert("🏗️ Maxed towers placed.");
+}
+
+function resetDevProgress() {
+    localStorage.clear();
+    alert("🧹 Local storage cleared.");
+}
+
 
 
 gameLoop();
