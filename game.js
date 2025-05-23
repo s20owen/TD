@@ -22,24 +22,22 @@ const towerTypes = ["basic", "spread", "sniper", "splash", "poison"];
 const MAPS = {
     1: {
         map: [  
-         ['P1', 'P2',  'P3',  'P4',  'P5',  'P6',  'G',    'G',    'G', 'G', 'G', 'G'],
+         ['S',  'P1',  'P2',  'P3',  'P4',  'P5',  'G',    'G',    'G', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'P6',  'G',    'G',    'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'P7',  'G',    'G',    'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'P8',  'G',    'G',    'G', 'G', 'G', 'G'],
-         ['G',  'P19', 'P20', 'P21', 'P22', 'P9',  'P23',  'P24',  'G', 'G', 'G', 'G'],
-         ['G',  'P18', 'G',   'G',   'G',   'P10', 'G',    'P25',  'G', 'G', 'G', 'G'],
-         ['T',  'P17', 'G',   'G',   'G',   'P11', 'G',    'P26',  'G', 'G', 'G', 'T'],
-         ['G',  'P16', 'P15', 'P14', 'P13', 'P12', 'G',    'P27',  'G', 'G', 'G', 'G'],
+         ['G',  'P17', 'P18', 'P19', 'P20', 'P9',  'P21',  'P22',  'G', 'G', 'G', 'G'],
+         ['T',  'P16', 'G',   'G',   'G',   'P10', 'G',    'P23',  'G', 'G', 'G', 'T'],
+         ['G',  'P15', 'P14', 'P13', 'P12', 'P11', 'G',    'P24',  'G', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P25',  'G', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P26',  'G', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P27',  'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P28',  'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P29',  'G', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P30',  'G', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P31',  'G', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P32',  'G', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'G',    'P33',  'G', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'P34',  'T', 'G', 'G', 'G'],
-         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'P35',  'T', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'P31',  'T', 'G', 'G', 'G'],
+         ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'P32',  'T', 'G', 'G', 'G'],
          ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'E',    'T', 'G', 'G', 'G']
-       
-         
         ],
         waves: 
         generateWaves(50) // dynamically generating waves
@@ -199,55 +197,56 @@ function generateWaves(totalWaves = 50) {
 
     for (let i = 1; i <= totalWaves; i++) {
         const enemyQueue = [];
-
         const difficultyMultiplier = 1 + i * 0.1;
 
         // Core enemy: always basics
-        const basicCount = Math.floor((5 + i * 1.2) * difficultyMultiplier);
+        const basicCount = Math.floor((5 + i * 1.1) * difficultyMultiplier);
         for (let j = 0; j < basicCount; j++) enemyQueue.push("basic");
 
-        // Fast enemies appear more often after wave 4
-        if (i >= 4) {
-            const fastCount = Math.floor((i / 2) * difficultyMultiplier);
+        // Fast enemies scale more aggressively after wave 5
+        if (i >= 5) {
+            const fastCount = Math.floor(Math.max(2, (i * 0.7)));
             for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
         }
 
-        // Add tanks starting wave 8
+        // Tanks grow slowly but steadily
         if (i >= 8) {
-            const tankCount = Math.floor(i / 4);
+            const tankCount = Math.floor(Math.max(1, (i * 0.4)));
             for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
         }
 
-        // Add healers every 5th wave
+        // Healers every 6th wave but more as waves increase
         if (i % 6 === 0) {
-            const healers = 2 + Math.floor(i / 5);
-            for (let j = 0; j < healers; j++) enemyQueue.push("healer");
+            const healerCount = 2 + Math.floor(i / 4);
+            for (let j = 0; j < healerCount; j++) enemyQueue.push("healer");
         }
 
-        // Splitters from wave 10+
+        // Splitters from wave 10+, scale steadily
         if (i >= 10 && i % 3 === 0) {
-            const splitterCount = Math.floor(i / 4);
+            const splitterCount = Math.floor(Math.max(2, i / 3));
             for (let j = 0; j < splitterCount; j++) enemyQueue.push("splitter");
         }
 
-        // Stealth from wave 12+
-        if (i >= 12 && i % 4 === 0) {
-            const stealthCount = Math.floor(i / 3);
-            for (let j = 0; j < stealthCount; j++) enemyQueue.push("basic");
+        // Stealth from wave 12+, frequent late game
+        if (i >= 12 && i % 2 === 0) {
+            const stealthCount = Math.floor(Math.max(2, i / 3));
+            for (let j = 0; j < stealthCount; j++) enemyQueue.push("stealth");
         }
 
-        // Boss every 25 waves
+        // Bosses every 15 waves (and +1 more after wave 30)
         if (i % 15 === 0) {
-            enemyQueue.push("boss");
-        }
-        // mega boss
-        if (i % 40 === 0) {
-          enemyQueue.push("megaBoss");
+            const bosses = i >= 30 ? 2 : 1;
+            for (let j = 0; j < bosses; j++) enemyQueue.push("boss");
         }
 
-        // Shuffle enemy order starting after wave 5
+        // Mega Boss (unchanged, wave 40+)
+        if (i % 50 === 0) {
+            enemyQueue.push("megaBoss");
+        }
+
+        // Shuffle enemy queue for variety after early waves
         if (i <= 5) {
-            waves.push(enemyQueue); // early waves stay structured
+            waves.push(enemyQueue); // early waves stay predictable
         } else {
             shuffleArray(enemyQueue);
             waves.push(enemyQueue);
@@ -256,6 +255,7 @@ function generateWaves(totalWaves = 50) {
 
     return waves;
 }
+
 
 function shuffleArray(arr) {
     for (let i = arr.length - 1; i > 0; i--) {
