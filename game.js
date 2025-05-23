@@ -199,54 +199,56 @@ function generateWaves(totalWaves = 50) {
         const enemyQueue = [];
         const difficultyMultiplier = 1 + i * 0.1;
 
-        // Core enemy: always basics
-        const basicCount = Math.floor((5 + i * 1.1) * difficultyMultiplier);
+        // Basic enemies
+        const basicCount = Math.floor((5 + i * 1.2) * difficultyMultiplier);
         for (let j = 0; j < basicCount; j++) enemyQueue.push("basic");
 
-        // Fast enemies scale more aggressively after wave 5
-        if (i >= 5) {
-            const fastCount = Math.floor(Math.max(2, (i * 0.7)));
-            for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
+        // Fast enemies
+        const fastCount = i >= 4 ? Math.floor((i / 2) * 1.1) : 0;
+        for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
+
+        // Tanks
+        const tankCount = i >= 8 ? Math.floor(i / 3.5) : 0;
+        for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
+
+        // Mini enemies (start wave 10+)
+        if (i >= 10) {
+            const miniCount = Math.floor(i * 0.8);
+            for (let j = 0; j < miniCount; j++) enemyQueue.push("mini");
         }
 
-        // Tanks grow slowly but steadily
-        if (i >= 8) {
-            const tankCount = Math.floor(Math.max(1, (i * 0.4)));
-            for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
-        }
-
-        // Healers every 6th wave but more as waves increase
-        if (i % 6 === 0) {
-            const healerCount = 2 + Math.floor(i / 4);
+        // Healers
+        if (i >= 6) {
+            const healerCount = Math.floor(3 + i * 0.3);
             for (let j = 0; j < healerCount; j++) enemyQueue.push("healer");
         }
 
-        // Splitters from wave 10+, scale steadily
-        if (i >= 10 && i % 3 === 0) {
-            const splitterCount = Math.floor(Math.max(2, i / 3));
+        // Splitters
+        if (i >= 10) {
+            const splitterCount = Math.floor(i / 3.5);
             for (let j = 0; j < splitterCount; j++) enemyQueue.push("splitter");
         }
 
-        // Stealth from wave 12+, frequent late game
-        if (i >= 12 && i % 2 === 0) {
-            const stealthCount = Math.floor(Math.max(2, i / 3));
+        // Stealth enemies
+        if (i >= 12) {
+            const stealthCount = Math.floor(i / 2.5);
             for (let j = 0; j < stealthCount; j++) enemyQueue.push("stealth");
         }
 
-        // Bosses every 15 waves (and +1 more after wave 30)
-        if (i % 15 === 0) {
-            const bosses = i >= 30 ? 2 : 1;
-            for (let j = 0; j < bosses; j++) enemyQueue.push("boss");
+        // Boss
+        if (i % 10 === 0 || i > 30) {
+            const bossCount = i >= 30 ? Math.floor(i / 10) : 1;
+            for (let j = 0; j < bossCount; j++) enemyQueue.push("boss");
         }
 
-        // Mega Boss (unchanged, wave 40+)
-        if (i % 50 === 0) {
+        // MegaBoss on final wave only
+        if (i === totalWaves) {
             enemyQueue.push("megaBoss");
         }
 
-        // Shuffle enemy queue for variety after early waves
+        // Shuffle for randomness
         if (i <= 5) {
-            waves.push(enemyQueue); // early waves stay predictable
+            waves.push(enemyQueue);
         } else {
             shuffleArray(enemyQueue);
             waves.push(enemyQueue);
@@ -255,6 +257,7 @@ function generateWaves(totalWaves = 50) {
 
     return waves;
 }
+
 
 
 function shuffleArray(arr) {
@@ -391,6 +394,57 @@ tileImages.T.src = 'images/tree.png';
 tileImages.C.src = 'images/curve.png';
 tileImages.S = tileImages.P;
 tileImages.E = tileImages.P;
+
+// Tower images
+const towerImages = {
+    basic: new Image(),
+    spread: new Image(),
+    sniper: new Image(),
+    poison: new Image(),
+    splash: new Image()
+};
+
+towerImages.basic.src = "images/basictower.png";
+towerImages.spread.src = "images/spreadtower.png";
+towerImages.sniper.src = "images/snipertower.png";
+towerImages.poison.src = "images/poisontower.png";
+towerImages.splash.src = "images/splashtower.png";
+
+// sniper tower barrel for rotation
+const towerBarrels = {
+    sniper: new Image()
+};
+towerBarrels.sniper.src = "images/sniperbarrel.png";
+
+// enemies
+const ENEMY_IMAGES = {
+    basic: new Image(),
+    fast: new Image(),
+    tank: new Image(),
+    splitter: new Image(),
+    mini: new Image(),
+    stealth: new Image(),
+    healer: new Image(),
+    boss: new Image(),
+    megaboss: new Image()
+};
+
+for (let key in ENEMY_IMAGES) {
+    ENEMY_IMAGES[key].src = `images/enemies/${key}.png`;
+}
+
+// Bullets
+const BULLET_IMAGES = {
+    basic: new Image(),
+    spread: new Image(),
+    splash: new Image(),
+    poison: new Image()
+};
+
+BULLET_IMAGES.basic.src = "images/bullets/basic.png";
+BULLET_IMAGES.spread.src = "images/bullets/spread.png";
+BULLET_IMAGES.splash.src = "images/bullets/splash.png";
+BULLET_IMAGES.poison.src = "images/bullets/poison.png";
 
 // Load Sounds (Howler.js)
 const sounds = {
@@ -613,6 +667,7 @@ class Tower {
         this.range = TILE_SIZE * (type === "sniper" ? 4 : 1.5);
         this.cooldown = 0;
         this.level = 1;
+        this.angle = 0; // 🆕 Track facing direction
     }
 
     upgrade() {
@@ -623,7 +678,7 @@ class Tower {
     }
 
     update(enemies, bullets, delta = 1) {
-        if(this.cooldown > 0){
+        if (this.cooldown > 0) {
             this.cooldown -= delta;
             return;
         }
@@ -632,13 +687,12 @@ class Tower {
             if (e.type === "stealth" && this.level < 2) return false;
             return Math.hypot(this.x - e.x, this.y - e.y) < this.range;
         };
-        
-         // POISON TOWER LOGIC
+
         if (this.type === "poison") {
             const target = enemies.find(inRange);
             if (target) {
                 bullets.push(getPoisonBullet(this.x, this.y, target, this.level));
-                queuePoisonSound?.(); // if sound logic added
+                queuePoisonSound?.();
                 this.cooldown = 50;
             }
         }
@@ -651,30 +705,38 @@ class Tower {
                 }
             }
             const target = best;
-
             if (target) {
-                bullets.push(getBullet(this.x, this.y, target, this.level));
-                queueHitSound(); // 🔊 just queue
+                const dx = target.x - this.x;
+                const dy = target.y - this.y;
+                this.angle = Math.atan2(dy, dx) + Math.PI / 2; // 🆕 Update facing angle
+                // Compute bullet origin from barrel tip
+                const barrelLength = 12; // tweak this to match the visible length after scaling
+                const tipX = this.x + Math.cos(this.angle - Math.PI / 2) * barrelLength;
+                const tipY = this.y + Math.sin(this.angle - Math.PI / 2) * barrelLength;
+
+                bullets.push(getBullet(tipX, tipY, target, this.level));
+
+
+                queueHitSound();
                 this.cooldown = 70;
             }
         } else if (this.type === "splash") {
             const target = enemies.find(inRange);
             if (target) {
                 bullets.push(getSplashBullet(this.x, this.y, target, this.level));
-                queueHitSound(); // 🔊
+                queueHitSound();
                 this.cooldown = 40;
             }
-        }else if (this.type === "basic") {
+        } else if (this.type === "basic") {
             const target = enemies.find(inRange);
             if (target) {
                 const b = getBullet(this.x, this.y, target, this.level);
-                b.angle = null; // ✅ Clear angle to force target-based logic
+                b.angle = null;
                 bullets.push(b);
                 queueHitSound();
                 this.cooldown = 30;
             }
-        }
-        else if (this.type === "spread") {
+        } else if (this.type === "spread") {
             const target = enemies.find(inRange);
             if (target) {
                 const angleToTarget = Math.atan2(target.y - this.y, target.x - this.x);
@@ -694,22 +756,45 @@ class Tower {
                 this.cooldown = 45;
             }
         }
-
-
     }
 
     draw() {
-        const size = TILE_SIZE / 2.5;
-        const offset = TILE_SIZE / 5;
+        const baseImg = towerImages[this.type];
+        const barrelImg = towerBarrels[this.type]; // 🆕
+        const size = TILE_SIZE * 0.8;
+        const offset = size / 2;
 
-        ctx.fillStyle = this.type === "basic" ? "cyan" :
-                        this.type === "spread" ? "magenta" :
-                        this.type === "sniper" ? "blue" :
-                        this.type === "poison" ? "limegreen" :
-                        "orange";
+        // Draw base image (no rotation)
+        if (baseImg?.complete) {
+            ctx.drawImage(baseImg, this.x - offset, this.y - offset, size, size);
+        } else {
+            ctx.fillStyle = "gray";
+            ctx.fillRect(this.x - offset, this.y - offset, size, size);
+        }
 
-        ctx.fillRect(this.x - offset, this.y - offset, size, size);
+        // Rotate and draw barrel (only for sniper)
+        if (this.type === "sniper" && barrelImg?.complete) {
+            const barrelW = 14 * 0.9;
+            const barrelH = 62 * 0.9;
 
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.angle); // barrel faces up by default
+
+            // ✅ Shift barrel upward so it pivots from the bottom-center
+            ctx.drawImage(
+                barrelImg,
+                -barrelW / 2,
+                -barrelH + 10, // adjust anchor upward
+                barrelW,
+                barrelH
+            );
+
+            ctx.restore();
+        }
+
+
+        // Range on hover
         if (hoveredTower === this) {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.range, 0, Math.PI * 2);
@@ -718,6 +803,7 @@ class Tower {
             ctx.stroke();
         }
 
+        // Selection indicator
         if (selectedTower === this) {
             const padding = 4;
             ctx.strokeStyle = "yellow";
@@ -730,11 +816,27 @@ class Tower {
             );
         }
 
+        // Tower level
         ctx.fillStyle = "white";
         ctx.font = "10px monospace";
-        ctx.fillText(`Lv${this.level}`, this.x - 10, this.y + TILE_SIZE / 2 );
+        ctx.fillText(`Lv${this.level}`, this.x - 10, this.y + TILE_SIZE / 2);
     }
+    
+    getBarrelEnd() {
+        if (this.type !== "sniper") return { x: this.x, y: this.y };
+
+        const barrelLength = 62 * 0.9; // match scaled barrel height
+        const offset = barrelLength - 10; // adjust if needed
+
+        return {
+            x: this.x + Math.cos(this.angle) * offset,
+            y: this.y + Math.sin(this.angle) * offset
+        };
+    }
+
+
 }
+
 
 class Bullet {
     constructor(x, y, target, level, angle = null) {
@@ -850,14 +952,22 @@ class Bullet {
         if (enemyKillCount >= 100) unlockAchievement("kill_100", "100 Enemies Defeated");
     }
 
-    draw() {
+   draw() {
         if (this.hit) return;
 
-        ctx.fillStyle = "yellow";
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, TILE_SIZE / 16, 0, Math.PI * 2);
-        ctx.fill();
+        const img = this.angle !== null ? BULLET_IMAGES.spread : BULLET_IMAGES.basic;
+        const size = TILE_SIZE * 0.25;
+
+        if (img.complete) {
+            ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
+        } else {
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
+
 }
 
 
@@ -923,11 +1033,19 @@ class SplashBullet {
     }
 
     draw() {
-        ctx.fillStyle = "orange";
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, TILE_SIZE / 12, 0, Math.PI * 2);
-        ctx.fill();
+        const img = BULLET_IMAGES.splash;
+        const size = TILE_SIZE * 0.3;
+
+        if (img.complete) {
+            ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
+        } else {
+            ctx.fillStyle = "orange";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
+
 }
 
 
@@ -970,11 +1088,19 @@ class PoisonBullet {
     }
 
     draw() {
-        ctx.fillStyle = "limegreen";
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, TILE_SIZE / 16, 0, Math.PI * 2);
-        ctx.fill();
+        const img = BULLET_IMAGES.poison;
+        const size = TILE_SIZE * 0.25;
+
+        if (img.complete) {
+            ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
+        } else {
+            ctx.fillStyle = "limegreen";
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
     }
+
 }
 
 
@@ -1077,57 +1203,78 @@ class Enemy {
     }
 
 
-    draw() {
-    // Set base color
-    let color = "red";
-    switch (this.type) {
-        case "fast":     color = "lime"; break;
-        case "tank":     color = "purple"; break;
-        case "boss":     color = "black"; break;
-        case "splitter": color = "#aa5500"; break;
-        case "mini":     color = "#ffaa00"; break;
-        case "healer":   color = "#33ccee"; break;
-        case "stealth":  color = "rgba(255,255,255,0.4)"; break;
-        case "megaBoss": color = "darkred"; break;
+    draw(ctx) {
+        const img = ENEMY_IMAGES[this.type];
+
+        // Define per-enemy scale factor
+        const scaleMap = {
+            basic: 0.55,
+            fast: 0.5,
+            tank: 0.65,
+            splitter: 0.55,
+            mini: 0.4,
+            stealth: 0.5,
+            healer: 0.55,
+            boss: 0.7,
+            megaBoss: 0.85
+        };
+
+        const scale = scaleMap[this.type] || 0.6;
+        const size = TILE_SIZE * scale;
+
+        // Poison aura effect
+        const isPoisoned = this.statusEffects.some(e => e.type === "poison");
+        if (isPoisoned) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, TILE_SIZE * 0.5 + Math.sin(Date.now() / 150) * 2, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0,255,0,0.15)";
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Image-based rendering with fallback
+        if (img && img.complete) {
+            ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
+        } else {
+            // Fallback: colored circle
+            let color = "red";
+            switch (this.type) {
+                case "fast":     color = "lime"; break;
+                case "tank":     color = "purple"; break;
+                case "boss":     color = "black"; break;
+                case "splitter": color = "#aa5500"; break;
+                case "mini":     color = "#ffaa00"; break;
+                case "healer":   color = "#33ccee"; break;
+                case "stealth":  color = "rgba(255,255,255,0.4)"; break;
+                case "megaBoss": color = "darkred"; break;
+            }
+
+            const radius = this.type === "megaBoss" ? TILE_SIZE * 0.5 : TILE_SIZE / 5;
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Health bar
+        this.lastDrawnHp += (this.health - this.lastDrawnHp) * 0.2;
+        const hpPct = Math.max(0, this.lastDrawnHp / this.maxHealth);
+
+        if (this.type === "megaBoss") {
+            ctx.fillStyle = "black";
+            ctx.fillRect(this.x - 30, this.y - 30, 60, 6);
+            ctx.fillStyle = "red";
+            ctx.fillRect(this.x - 30, this.y - 30, 60 * hpPct, 6);
+        } else {
+            ctx.fillStyle = "red";
+            ctx.fillRect(this.x - 12, this.y - 20, 24, 4);
+            ctx.fillStyle = "lime";
+            ctx.fillRect(this.x - 12, this.y - 20, 24 * hpPct, 4);
+        }
     }
 
-    // Poison aura
-    const isPoisoned = this.statusEffects.some(e => e.type === "poison");
-    if (isPoisoned) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, TILE_SIZE * 0.5 + Math.sin(Date.now() / 150) * 2, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(0,255,0,0.15)";
-        ctx.fill();
-        ctx.restore();
-    }
 
-    // Choose radius
-    let radius = TILE_SIZE / 5;
-    if (this.type === "megaBoss") radius = TILE_SIZE * 0.5;
-
-    // Draw body
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Animate health bar
-    this.lastDrawnHp += (this.health - this.lastDrawnHp) * 0.2;
-    const hpPct = Math.max(0, this.lastDrawnHp / this.maxHealth);
-
-    if (this.type === "megaBoss") {
-        ctx.fillStyle = "black";
-        ctx.fillRect(this.x - 30, this.y - 30, 60, 6);
-        ctx.fillStyle = "red";
-        ctx.fillRect(this.x - 30, this.y - 30, 60 * hpPct, 6);
-    } else {
-        ctx.fillStyle = "red";
-        ctx.fillRect(this.x - 12, this.y - 20, 24, 4);
-        ctx.fillStyle = "lime";
-        ctx.fillRect(this.x - 12, this.y - 20, 24 * hpPct, 4);
-    }
-}
 
 }
 
@@ -1186,7 +1333,7 @@ function draw() {
     drawMap();
 
     towers.forEach(t => t.draw());
-    enemies.forEach(e => e.draw());
+    enemies.forEach(e => e.draw(ctx));
     bullets.forEach(b => b.draw());
 
     particlePool.drawAll(ctx);
@@ -1250,7 +1397,7 @@ function draw() {
     // FPS Counter
     ctx.fillStyle = "white";
     ctx.font = "12px monospace";
-    ctx.fillText(`FPS: ${fps}`, 335, 20);
+    ctx.fillText(`FPS: ${fps}`, 330, 20);
 
     // DEV DEBUG PANEL
     if (showDebugStats) {
@@ -1721,20 +1868,9 @@ canvas.addEventListener("click", (e) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Check if user clicked the tower panel (right-hand side)
-    const panelWidth = 120;
-    const startX = canvas.width - panelWidth;
-    if (x >= startX) {
-        const index = Math.floor((y - 100) / 70);
-        if (towerTypes[index]) {
-            selectedTowerType = towerTypes[index];
-
-            // Visually mark it selected
-            document.querySelectorAll("#towerPanel button").forEach(b => b.classList.remove("selected"));
-            document.querySelector(`#towerPanel button[data-type="${selectedTowerType}"]`)?.classList.add("selected");
-        }
-        return;
-    }
+    const panel = document.getElementById("towerPanel");
+    const panelTop = panel.getBoundingClientRect().top;
+    if (y >= panelTop - rect.top) return; // ✅ Block clicks in tower panel area
 
     // Interact with existing towers
     const clickedTower = towers.find(t => Math.hypot(t.x - x, t.y - y) < TILE_SIZE / 2);
@@ -1755,34 +1891,40 @@ canvas.addEventListener("click", (e) => {
     // ✅ Don't place if no tower is selected
     if (!selectedTowerType) return;
 
-    const cost = towerCosts[selectedTowerType];
-    if (gold >= cost) {
-    const tileX = Math.floor(x / TILE_SIZE);
-    const tileY = Math.floor(y / TILE_SIZE);
-    const tileType = currentMap[tileY]?.[tileX]; // ✅ Fix: define tileType here
-
-    // Prevent placing on path tiles
-    if (["P", "C", "S", "E", "T"].includes(tileType) || /^P\d+$/.test(tileType)) {
-        //addFloatingMessage("❌ Can't build on path!", x, y, "orange");
+    // ✅ Prevent placing locked towers
+    if (playerRank < towerUnlocks[selectedTowerType]) {
+        addFloatingMessage(`🔒 Unlocks at Rank ${towerUnlocks[selectedTowerType]}`, x, y, "orange");
         return;
     }
 
-    const centerX = tileX * TILE_SIZE + TILE_SIZE / 2;
-    const centerY = tileY * TILE_SIZE + TILE_SIZE / 2;
+    const cost = towerCosts[selectedTowerType];
+    if (gold >= cost) {
+        const tileX = Math.floor(x / TILE_SIZE);
+        const tileY = Math.floor(y / TILE_SIZE);
+        const tileType = currentMap[tileY]?.[tileX];
 
-    towers.push(new Tower(centerX, centerY, selectedTowerType));
-    gold -= cost;
+        // Prevent placing on path tiles
+        if (["P", "C", "S", "E", "T"].includes(tileType) || /^P\d+$/.test(tileType)) {
+            addFloatingMessage("❌ Can't build on path!", x, y, "orange");
+            return;
+        }
 
-    // Clear selection after placing
-    selectedTowerType = null;
-    document.querySelectorAll("#towerPanel button").forEach(b => b.classList.remove("selected"));
-    selectedTower = null;
-    hideTowerActionUI();
+        const centerX = tileX * TILE_SIZE + TILE_SIZE / 2;
+        const centerY = tileY * TILE_SIZE + TILE_SIZE / 2;
+
+        towers.push(new Tower(centerX, centerY, selectedTowerType));
+        gold -= cost;
+
+        // Clear selection after placing
+        selectedTowerType = null;
+        document.querySelectorAll("#towerPanel button").forEach(b => b.classList.remove("selected"));
+        selectedTower = null;
+        hideTowerActionUI();
     } else {
         addFloatingMessage("Not enough gold!", x, y, "red");
     }
-
 });
+
 
 
 canvas.addEventListener("mousemove", (e) => {

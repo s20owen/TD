@@ -101,6 +101,7 @@ button:hover {
   height: calc(100dvh - 60px - 76px); /* HUD and towerPanel heights */
   background: #000;
   z-index: 1;
+  image-rendering: pixelated;
 }
 
 
