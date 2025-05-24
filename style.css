@@ -89,8 +89,6 @@ button:hover {
   cursor: pointer;
 }
 
-
-
 /* Game canvas */
 #gameCanvas {
   display: block;
@@ -119,25 +117,45 @@ button:hover {
   z-index: 1000;
 }
 
-
 .tower-panel button {
   flex: 1;
   max-width: 70px;
-  height: 60px;
-  font-size: 16px;
+  height: 100%;
+  font-size: 12px;
   text-align: center;
   background: #333;
   color: white;
   border: none;
   border-radius: 8px;
-  margin: 0 4px;
+  margin: 0 2px;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.tower-panel button img {
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  margin: 0 0 4px 0;
 }
 
 .tower-panel button small {
-  display: block;
+  font-size: 11px;
+  color: gold;
+}
+
+#towerPanel button.selected {
+  outline: 2px solid yellow;
+  background-color: #666;
+}
+
+
+.tower-panel button small {
   font-size: 12px;
-  margin-top: 2px;
 }
 
 

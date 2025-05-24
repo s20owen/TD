@@ -96,7 +96,7 @@ const achievementBox = document.getElementById("achievements");
 
 // Game Variables
 let pausedForIntro = false;
-let TILE_SIZE = 64;
+let TILE_SIZE = 65;
 let wave = 0, gold = 250, lives = 10;
 let towers = [], enemies = [], bullets = [], splitQueue = [];
 let gameWon = false, gameOver = false, paused = false, isWaveActive = false;
@@ -197,73 +197,72 @@ function generateWaves(totalWaves = 50) {
 
     for (let i = 1; i <= totalWaves; i++) {
         const enemyQueue = [];
-        const difficultyMultiplier = 1 + i * 0.1;
 
-        // Basic enemies
-        const basicCount = Math.floor((5 + i * 1.2) * difficultyMultiplier);
+        const difficulty = 1 + i * 0.12;
+
+        // Always basic
+        const basicCount = Math.floor(5 + i * 1.1);
         for (let j = 0; j < basicCount; j++) enemyQueue.push("basic");
 
-        // Fast enemies
-        const fastCount = i >= 4 ? Math.floor((i / 2) * 1.1) : 0;
-        for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
-
-        // Tanks
-        const tankCount = i >= 8 ? Math.floor(i / 3.5) : 0;
-        for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
-
-        // Mini enemies (start wave 10+)
-        if (i >= 10) {
-            const miniCount = Math.floor(i * 0.8);
-            for (let j = 0; j < miniCount; j++) enemyQueue.push("mini");
+        // Fast enemies after wave 3
+        if (i >= 3) {
+            const fastCount = Math.floor(i / 2);
+            for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
         }
 
-        // Healers
-        if (i >= 6) {
-            const healerCount = Math.floor(3 + i * 0.3);
+        // Tanks after wave 5, more as wave increases
+        if (i >= 5) {
+            const tankCount = Math.floor(i / 3.5);
+            for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
+        }
+
+        // Healers every 6th wave, ramping after wave 20
+        if (i % 6 === 0 || i >= 20) {
+            const healerCount = i >= 20 ? Math.floor(Math.random() * (i / 5)) + 1 : Math.floor(i / 6);
             for (let j = 0; j < healerCount; j++) enemyQueue.push("healer");
         }
 
-        // Splitters
+        // Splitters start from wave 10
         if (i >= 10) {
-            const splitterCount = Math.floor(i / 3.5);
+            const splitterCount = Math.floor(i / 4);
             for (let j = 0; j < splitterCount; j++) enemyQueue.push("splitter");
         }
 
-        // Stealth enemies
-        if (i >= 12) {
-            const stealthCount = Math.floor(i / 2.5);
+        // Stealth units from wave 12+
+        if (i >= 12 && i % 3 === 0) {
+            const stealthCount = Math.floor(i / 3.5);
             for (let j = 0; j < stealthCount; j++) enemyQueue.push("stealth");
         }
 
-        // Boss
-        if (i % 10 === 0 || i > 30) {
-            const bossCount = i >= 30 ? Math.floor(i / 10) : 1;
+        // Mini enemies swarm after wave 15
+        if (i >= 15 && i % 2 === 0) {
+            const miniCount = Math.floor(i * 1.5);
+            for (let j = 0; j < miniCount; j++) enemyQueue.push("mini");
+        }
+
+        // Boss logic
+        if (i >= 20 && i % 2 === 0) {
+            const bossCount = Math.floor(i / 10);
             for (let j = 0; j < bossCount; j++) enemyQueue.push("boss");
         }
 
-        // MegaBoss on final wave only
+        // MegaBoss only at last wave
         if (i === totalWaves) {
             enemyQueue.push("megaBoss");
         }
 
-        // Shuffle for randomness
-        if (i <= 5) {
-            waves.push(enemyQueue);
-        } else {
-            shuffleArray(enemyQueue);
-            waves.push(enemyQueue);
-        }
+        // Shuffle to add unpredictability
+        shuffleArray(enemyQueue);
+        waves.push(enemyQueue);
     }
 
     return waves;
 }
 
-
-
-function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = (Math.random() * (i + 1)) | 0; // Faster bitwise floor
-        [arr[i], arr[j]] = [arr[j], arr[i]];
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
@@ -1766,13 +1765,15 @@ function spawnDamageNumber(x, y, text, color = "yellow", lifetime = 30) {
 
 function showTowerActionUI(tower) {
     hideTowerActionUI();
+
     const canvasRect = canvas.getBoundingClientRect();
     const upgradeCost = towerUpgradeCost(tower);
-    const sellValue = Math.floor((towerCosts[tower.type] || 50) * (0.5 + (tower.level - 1) * 0.25));
+    const baseCost = towerCosts[tower.type] || 50;
+    const totalCostInvested = baseCost + (tower.level - 1) * towerUpgradeCost({ type: tower.type, level: tower.level });
+    const sellValue = Math.floor(totalCostInvested * 0.6);
+
     towerActionUI = document.createElement("div");
     towerActionUI.style.position = "absolute";
-    towerActionUI.style.left = `${canvasRect.left + tower.x - 80}px`;
-    towerActionUI.style.top = `${canvasRect.top + tower.y + TILE_SIZE / 2}px`;
     towerActionUI.style.padding = "6px";
     towerActionUI.style.background = "#222";
     towerActionUI.style.border = "1px solid #888";
@@ -1782,7 +1783,31 @@ function showTowerActionUI(tower) {
     towerActionUI.style.fontSize = "12px";
     towerActionUI.style.zIndex = "1000";
     towerActionUI.style.maxWidth = "120px";
+
+    // First, temporarily append to calculate size
+    document.body.appendChild(towerActionUI);
+    const panelWidth = towerActionUI.offsetWidth;
+    const panelHeight = towerActionUI.offsetHeight;
+    document.body.removeChild(towerActionUI); // we'll re-append after positioning
+
+    // Default position
+    let left = canvasRect.left + tower.x - panelWidth / 2;
+    let top = canvasRect.top + tower.y + TILE_SIZE / 2;
+
+    const padding = 8;
+    // Clamp to screen edges
+    left = Math.max(padding, Math.min(window.innerWidth - panelWidth - padding, left));
+    top = Math.max(padding, Math.min(window.innerHeight - panelHeight - padding, top));
+
+    towerActionUI.style.left = `${left}px`;
+    towerActionUI.style.top = `${top}px`;
     
+    const towerName = document.createElement("div");
+    towerName.textContent = tower.type.charAt(0).toUpperCase() + tower.type.slice(1) + " Tower";
+    towerName.style.marginBottom = "6px";
+    towerName.style.fontWeight = "bold";
+    towerName.style.color = "white";
+    towerActionUI.appendChild(towerName);
 
     const upgradeBtn = document.createElement("button");
     upgradeBtn.textContent = tower.level >= 5 ? `Max Level (${tower.level})` : `Upgrade ($${upgradeCost})`;
@@ -1816,6 +1841,7 @@ function showTowerActionUI(tower) {
     towerActionUI.appendChild(sellBtn);
     document.body.appendChild(towerActionUI);
 }
+
 
 function hideTowerActionUI() {
     if (towerActionUI) {
