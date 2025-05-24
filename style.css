@@ -1,56 +1,61 @@
-/* Global Reset */
+/* === Global Reset === */
 html, body {
-    margin: 0;
-    padding: 0;
-    background: #111;
-    color: #fff;
-    font-family: monospace;
-    overflow: hidden;
-    height: 100%;
-    width: 100%
+  margin: 0;
+  padding: 0;
+  background: #111;
+  color: #fff;
+  font-family: monospace;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
 }
 
 button {
-    font-family: monospace;
-    font-size: 16px;
-    background: #444;
-    color: white;
-    border: none;
-    padding: 10px 12px;
-    margin: 4px;
-    border-radius: 6px;
-    cursor: pointer;
+  font-family: monospace;
+  font-size: 16px;
+  background: #444;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  margin: 4px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 button:hover {
-    background: #666;
+  background: #666;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
+/* === Level Select Screen === */
 #levelSelector {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background: linear-gradient(to bottom, #222, #111);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(to bottom, #222, #111);
 }
 #levelSelector h1 {
-    font-size: 32px;
-    margin-bottom: 20px;
+  font-size: 32px;
+  margin-bottom: 20px;
 }
 #levelSelector button {
-    width: 200px;
+  width: 200px;
 }
 
-/* Game UI */
+/* === Game Layout === */
 #gameContainer {
-    display: flex;
-    flex-direction: row;
-    width: 100vw;
-    height: 100vh;
-    position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  position: relative;
 }
 
-/* Top HUD Bar */
+/* === HUD Bar === */
 #hudBar {
   position: fixed;
   top: 0;
@@ -64,46 +69,38 @@ button:hover {
   padding: 0 4px;
   box-sizing: border-box;
   z-index: 1000;
-  font-family: monospace;
   font-size: 12px;
   gap: 4px;
 }
-
 #hudBar span,
-#hudBar #rankDisplay {
+#rankDisplay {
   flex: 1;
   text-align: center;
 }
-
-#rankDisplay{
-    margin-top: 2px;
+#rankDisplay {
+  margin-top: 2px;
 }
-
 #hudBar button {
   font-size: 10px;
   padding: 4px 8px;
   border-radius: 5px;
   background: #333;
-  color: white;
-  border: none;
-  cursor: pointer;
 }
 
-/* Game canvas */
+/* === Game Canvas === */
 #gameCanvas {
   display: block;
   position: absolute;
   top: 60px;
-  left: 2px;
+  left: 0;
   width: 100%;
-  height: calc(100dvh - 60px - 76px); /* HUD and towerPanel heights */
+  height: calc(100dvh - 60px - 76px); /* HUD + tower panel */
   background: #000;
   z-index: 1;
   image-rendering: pixelated;
 }
 
-
-/* Tower Selection Panel */
+/* === Tower Panel (Legacy) === */
 .tower-panel {
   position: fixed;
   bottom: 0;
@@ -122,146 +119,192 @@ button:hover {
   max-width: 70px;
   height: 100%;
   font-size: 12px;
-  text-align: center;
   background: #333;
   color: white;
-  border: none;
   border-radius: 8px;
-  margin: 0 2px;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 4px;
+  margin: 0 2px;
+  text-align: center;
 }
-
 .tower-panel button img {
   width: 32px;
   height: 32px;
   image-rendering: pixelated;
-  margin: 0 0 4px 0;
+  margin-bottom: 4px;
 }
-
 .tower-panel button small {
-  font-size: 11px;
+  font-size: 12px;
   color: gold;
 }
-
 #towerPanel button.selected {
   outline: 2px solid yellow;
   background-color: #666;
 }
 
+/* === Paginated Tower Buttons (Modern Panel) === */
+.tower-pages {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  gap: 6px;
+  overflow: hidden;
+}
 
-.tower-panel button small {
+.tower-button {
+  width: 72px;
+  height: 80px;
+  padding: 6px 4px 4px 4px;
+  background: #222;
+  border: 1px solid #666;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+}
+
+.tower-button img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-top: 6px;
+}
+
+.tower-button small {
   font-size: 12px;
+  color: gold;
+  margin-bottom: 4px;
+}
+
+/* === Pagination Arrows === */
+.page-arrow {
+  width: 40px;
+  height: 100%;
+  background: #222;
+  color: white;
+  font-size: 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+.page-arrow:hover {
+  background: #444;
+}
+
+.lock-icon {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 16px;
+  color: orange;
+  pointer-events: none;
+}
+.tower-button {
+  position: relative; /* so lock-icon can be absolutely positioned */
 }
 
 
-#towerPanel button.selected {
-    outline: 2px solid yellow;
-    background-color: #666;
-}
-
+/* === Tower Option UI (Right-click Panel) === */
 .towerOption {
-    width: 60px;
-    height: 60px;
-    background: #444;
-    margin: 10px 0;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: monospace;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.2s;
+  width: 60px;
+  height: 60px;
+  background: #444;
+  margin: 10px 0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: monospace;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
-
 .towerOption:hover {
-    transform: scale(1.05);
-    background-color: #666;
+  transform: scale(1.05);
+  background-color: #666;
 }
 .towerOption.selected {
-    outline: 2px solid yellow;
+  outline: 2px solid yellow;
 }
-
 .towerOption .icon {
-    width: 100%;
-    height: 60%;
-    background: gray;
-    margin-bottom: 4px;
+  width: 100%;
+  height: 60%;
+  background: gray;
+  margin-bottom: 4px;
 }
-
 .towerOption .label {
-    font-size: 12px;
-    color: white;
+  font-size: 12px;
 }
-
 .towerOption .cost {
-    font-size: 10px;
-    color: gold;
+  font-size: 10px;
+  color: gold;
 }
 
-/* Overlay message */
+/* === Overlay (Victory/Loss Message) === */
 #overlayMessage {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    color: white;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    z-index: 1000;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 1000;
 }
-
 #overlayText {
-    font-size: 20px;
-    margin-bottom: 20px;
+  font-size: 20px;
+  margin-bottom: 20px;
 }
 
+/* === Other Buttons === */
 #restartBtn, #speedToggleBtn, #pauseToggleBtn {
-    margin: 10px;
+  margin: 10px;
+}
+#startWaveBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 20px;
+  font-size: 18px;
+  background: #000;
+  border: none;
+  cursor: pointer;
+  display: none;
+  z-index: 10;
 }
 
-#startWaveBtn{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 10px 20px;
-    font-size: 18px;
-    background: #000;
-    border: none;
-    cursor: pointer;
-    display: none;
-    z-index: 10;
-}
-
+/* === Tooltip === */
 #towerTooltip {
-    display:none; 
-    position:absolute; 
-    z-index:1000; 
-    background:#222; 
-    color:white; 
-    padding:10px; 
-    border-radius:6px; 
-    font-family:monospace; 
-    font-size:12px; 
-    max-width:250px;
+  display: none;
+  position: absolute;
+  z-index: 1000;
+  background: #222;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 12px;
+  max-width: 254px;
 }
 
-#darkOpsBtn{
-    position: absolute; 
-    bottom: 10px; 
-    left: 10px;
-    padding: 0;
-    margin: 0;
-    max-width: 120px;
+/* === Dev Button === */
+#darkOpsBtn {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 0;
+  margin: 0;
+  max-width: 120px;
 }
-
