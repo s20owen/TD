@@ -76,9 +76,18 @@ document.getElementById("darkOpsBtn").addEventListener("click", () => {
     }
 });
 
+let wavesCompleted = parseInt(localStorage.getItem("wavesCompleted")) || 0;
+
 const LEVEL_UNLOCKS = {
   2: 30 // add more levels as needed
 };
+/* dynamic way to unlock levels
+ const LEVEL_UNLOCKS = {};
+    const totalLevels = Object.keys(MAPS).length;
+    for (let i = 2; i <= totalLevels; i++) {
+        LEVEL_UNLOCKS[i] = (i - 1) * 30; // e.g., level 2 unlocks at 30, 3 at 60, etc.
+    }
+ */
 
 
 renderLevelButtons();
@@ -199,13 +208,19 @@ function handleEnemyKill(enemyType) {
 
 function handleWaveComplete() {
   gainPoints(lives); // +5 for wave, +1 per life
+    // ✅ Update wave progress
+    const maxWaves = Math.max(wavesCompleted, wave + 1); // wave is 0-indexed
+    if (maxWaves > wavesCompleted) {
+        wavesCompleted = maxWaves;
+        localStorage.setItem("wavesCompleted", wavesCompleted);
+        evaluateLevelUnlocks(wavesCompleted);
+        renderLevelButtons();
+    }
 }
 
 function handleLevelComplete() {
     gainPoints(25);
-    wavesCompleted += 1;
-    localStorage.setItem("wavesCompleted", wavesCompleted);
-    evaluateLevelUnlocks(wavesCompleted);
+    renderLevelButtons();
 }
 
 // Unlocks based on new ranks
@@ -1837,6 +1852,8 @@ damageNumbers = damageNumbers.filter(d => d.lifetime > 0);
     // Check for wave end
     if (isWaveActive && waveQueue.length === 0 && enemies.length === 0) {
         isWaveActive = false;
+        
+        handleWaveComplete();
         if (wave >= waves.length && !gameWon) {
             gameWon = true;
             handleLevelComplete();
