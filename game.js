@@ -16,7 +16,7 @@ const ENEMY_STATS = {
     megaBoss: {health: 20000, speed: 0.5, reward: 1000, livesLost: 99}
 };
 
-// Map/Level
+// Map/Level 12 cols x 16 rows
 const MAPS = {
     1: {
         map: [  
@@ -42,19 +42,22 @@ const MAPS = {
     },
     2: {
         map: [
-            ['G', 'G',   'G',   'G',   'T',   'G'],
-            ['S', 'P1',  'P2',  'P3',  'P4',  'G'],
-            ['G', 'G',   'G',   'G',   'P5',  'G'],
-            ['G', 'G',   'G',   'G',   'P6',  'T'],
-            ['G', 'G',   'G',   'G',   'P7',  'G'],
-            ['G', 'G',   'G',   'T',   'P8',  'G'],
-            ['T', 'G',   'G',   'G',   'P9',  'G'],
-            ['G', 'P13', 'P12', 'P11', 'P10', 'G'],
-            ['G', 'P14', 'G',   'G',   'G',   'G'],
-            ['G', 'P15', 'G',   'G',   'G',   'G'],
-            ['G', 'P16', 'G',   'G',   'G',   'G'],
-            ['T', 'P17', 'T',   'G',   'G',   'G'],
-            ['T', 'P18', 'T',   'G',   'G',   'G']
+            ['G','T', 'G',  'G',   'G', 'G',   'G', 'G',  'T',  'G', 'G', 'G'],
+            ['S','P1','P2', 'P3', 'P4', 'P5', 'P6', 'P8', 'P9', 'G', 'G', 'G'],
+            ['G','G', 'G',  'G',  'G',  'G',  'G',  'G',  'P10','G', 'G', 'G'],
+            ['G','G', 'G',  'G',  'G',  'G',  'G',  'G',  'P11','T', 'G', 'G'],
+            ['G','G', 'G',  'G',  'G',  'G',  'G',  'G',  'P12','G', 'G', 'G'],
+            ['G','T', 'G',  'G',  'G',  'G',  'G',  'G',  'P13','G', 'G', 'G'],
+            ['G','G', 'P22','P21','P20','P17','P16','P15','P14','G', 'G', 'G'],
+            ['G','G', 'P23','G',  'G',  'G',  'G',  'G',  'G',  'T', 'G', 'G'],
+            ['G','G', 'P24','G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','G', 'P25','G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','T', 'P26','T',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','T', 'P27','T',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','G', 'P28','G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','G', 'P29','G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','G', 'P30','G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G'],
+            ['G','G', 'E',  'G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G']
         ],
         waves: 
         generateWaves(40)
@@ -107,7 +110,7 @@ const achievementBox = document.getElementById("achievements");
 
 // Game Variables
 let pausedForIntro = false;
-let TILE_SIZE = 65;
+let TILE_SIZE = 64;
 let wave = 0, gold = 250, lives = 10;
 let towers = [], enemies = [], bullets = [], splitQueue = [];
 let gameWon = false, gameOver = false, paused = false, isWaveActive = false;
