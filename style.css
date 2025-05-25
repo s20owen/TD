@@ -38,6 +38,8 @@ button:disabled {
   height: 100vh;
   background: linear-gradient(to bottom, #222, #111);
 }
+
+
 #levelSelector h1 {
   font-size: 32px;
   margin-bottom: 20px;
@@ -106,7 +108,7 @@ button:disabled {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 76px;
+  height: 72px;
   display: flex;
   justify-content: space-around;
   background: rgba(0, 0, 0, 0.85);
@@ -130,20 +132,12 @@ button:disabled {
   margin: 0 2px;
   text-align: center;
 }
-.tower-panel button img {
-  width: 32px;
-  height: 32px;
-  image-rendering: pixelated;
-  margin-bottom: 4px;
-}
-.tower-panel button small {
-  font-size: 12px;
-  color: gold;
-}
+
 #towerPanel button.selected {
-  outline: 2px solid yellow;
-  background-color: #666;
+    background-color: #666;
+    box-shadow: 0 0 0 2px yellow;
 }
+
 
 /* === Paginated Tower Buttons (Modern Panel) === */
 .tower-pages {
@@ -152,29 +146,14 @@ button:disabled {
   flex: 1;
   gap: 6px;
   overflow: hidden;
-}
-
-.tower-button {
-  width: 72px;
-  height: 80px;
-  padding: 6px 4px 4px 4px;
-  background: #222;
-  border: 1px solid #666;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-align: center;
+  padding: 3px 0;
 }
 
 .tower-button img {
   width: 32px;
   height: 32px;
   object-fit: contain;
-  margin-top: 6px;
+  margin-top: 2px;
 }
 
 .tower-button small {
@@ -308,3 +287,35 @@ button:disabled {
   margin: 0;
   max-width: 120px;
 }
+
+/* level locking  */
+#levelButtons{
+  display:flex; 
+  flex-wrap: wrap; 
+  gap: 12px; 
+  justify-content:center;
+}
+
+.level-container {
+  position: relative;
+  display: inline-block;
+  margin: 10px;
+}
+
+.level-thumbnail {
+  width: 100px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.level-lock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  pointer-events: none;
+  opacity: 0.85;
+}
+

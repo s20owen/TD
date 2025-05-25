@@ -8,11 +8,11 @@ const ENEMY_STATS = {
     basic:   { health: 100, speed: 1.2, reward: 10, livesLost: 1 },
     fast:    { health: 60,  speed: 2.0, reward: 15, livesLost: 1 },
     tank:    { health: 1000, speed: 0.6, reward: 30, livesLost: 3 },
-    boss:    { health: 5000, speed: 0.4, reward: 200, livesLost: 99 },
-    splitter:{ health: 150, speed: 1.1, reward: 20, livesLost: 1 },
+    boss:    { health: 7000, speed: 0.4, reward: 200, livesLost: 99 },
+    splitter:{ health: 200, speed: 1.1, reward: 20, livesLost: 1 },
     mini:    { health: 40,  speed: 1.8, reward: 5, livesLost: 1 },
     healer:  { health: 120, speed: 1.0, reward: 15, livesLost: 1 },
-    stealth: { health: 70,  speed: 1.5, reward: 12, livesLost: 1 },
+    stealth: { health: 80,  speed: 1.5, reward: 12, livesLost: 1 },
     megaBoss: {health: 20000, speed: 0.5, reward: 1000, livesLost: 99}
 };
 
@@ -38,27 +38,26 @@ const MAPS = {
          ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'E',    'T', 'G', 'G', 'G']
         ],
         waves: 
-        generateWaves(50) // dynamically generating waves
+        generateWaves(35) // dynamically generating waves
     },
     2: {
         map: [
-            ['G','G','G','P','P','P','P','G','G','G','G','G','G','G','G'],
-            ['G','G','G','G','G','G','P','G','G','G','G','G','G','G','G'],
-            ['G','G','G','G','G','G','P','G','G','G','G','G','G','G','G'],
-            ['G','G','G','G','G','G','P','G','G','G','G','G','G','G','G'],
-            ['G','G','G','G','G','G','P','P','P','P','P','G','G','G','G'],
-            ['G','G','G','G','G','G','G','G','G','G','P','G','G','G','G'],
-            ['G','G','G','G','G','G','G','G','G','G','P','G','G','G','G'],
-            ['G','G','G','G','G','G','G','G','G','G','P','G','G','G','G'],
-            ['G','G','G','G','G','G','G','G','G','G','P','G','G','G','G'],
-            ['G','G','G','G','G','G','G','G','G','G','P','G','G','G','G']
+            ['G', 'G',   'G',   'G',   'T',   'G'],
+            ['S', 'P1',  'P2',  'P3',  'P4',  'G'],
+            ['G', 'G',   'G',   'G',   'P5',  'G'],
+            ['G', 'G',   'G',   'G',   'P6',  'T'],
+            ['G', 'G',   'G',   'G',   'P7',  'G'],
+            ['G', 'G',   'G',   'T',   'P8',  'G'],
+            ['T', 'G',   'G',   'G',   'P9',  'G'],
+            ['G', 'P13', 'P12', 'P11', 'P10', 'G'],
+            ['G', 'P14', 'G',   'G',   'G',   'G'],
+            ['G', 'P15', 'G',   'G',   'G',   'G'],
+            ['G', 'P16', 'G',   'G',   'G',   'G'],
+            ['T', 'P17', 'T',   'G',   'G',   'G'],
+            ['T', 'P18', 'T',   'G',   'G',   'G']
         ],
-        waves: [
-            [{type: "fast", count: 5}],
-            [{type: "basic", count: 10}],
-            [{type: "tank", count: 3}, {type: "fast", count: 5}],
-            [{type: "fast", count: 8}, {type: "tank", count: 4}]
-        ]
+        waves: 
+        generateWaves(40)
     }
 };
 
@@ -77,7 +76,12 @@ document.getElementById("darkOpsBtn").addEventListener("click", () => {
     }
 });
 
+const LEVEL_UNLOCKS = {
+  2: 30 // add more levels as needed
+};
 
+
+renderLevelButtons();
 // Toggle dev panel on/off
 let showDebugStats = false; 
 
@@ -198,7 +202,10 @@ function handleWaveComplete() {
 }
 
 function handleLevelComplete() {
-  gainPoints(25);
+    gainPoints(25);
+    wavesCompleted += 1;
+    localStorage.setItem("wavesCompleted", wavesCompleted);
+    evaluateLevelUnlocks(wavesCompleted);
 }
 
 // Unlocks based on new ranks
@@ -349,8 +356,8 @@ const towerInfo = {
         cost: towerCosts.basic,
         unlock: towerUnlocks.basic,
         image: "images/basictower.png",
-        baseDamage: 30,
-        damageScale: 8,
+        baseDamage: 20,
+        damageScale: 6,
         description: "Fires a single shot quickly at nearby enemies.",
         upgrades: [
             "Faster firing",
@@ -363,8 +370,8 @@ const towerInfo = {
         cost: towerCosts.spread,
         unlock: towerUnlocks.spread,
         image: "images/spreadtower.png",
-        baseDamage: 35,
-        damageScale: 6,
+        baseDamage: 25,
+        damageScale: 7,
         description: "Fires a spread of bullets at short range.",
         upgrades: [
             "More bullets",
@@ -377,7 +384,7 @@ const towerInfo = {
         cost: towerCosts.sniper,
         unlock: towerUnlocks.sniper,
         image: "images/snipertower.png",
-        baseDamage: 55,
+        baseDamage: 75,
         damageScale: 8,
         description: "High damage, long-range shots. Slow rate of fire.",
         upgrades: [
@@ -391,8 +398,8 @@ const towerInfo = {
         cost: towerCosts.splash,
         unlock: towerUnlocks.splash,
         image: "images/splashtower.png",
-        baseDamage: 60,
-        damageScale: 7,
+        baseDamage: 55,
+        damageScale: 9,
         description: "Deals area damage to groups of enemies.",
         upgrades: [
             "Larger explosion radius",
@@ -405,7 +412,7 @@ const towerInfo = {
         cost: towerCosts.poison,
         unlock: towerUnlocks.poison,
         image: "images/poisontower.png",
-        baseDamage: 20,
+        baseDamage: 25,
         damageScale: 8,
         description: "Applies damage-over-time to enemies with a toxic projectile.",
         upgrades: [
@@ -2007,7 +2014,6 @@ function loadLevel(level) {
         wave = DEV_START_WAVE - 1;
         seenEnemyTypes = new Set(); // Clear enemy types to avoid intros
     }*/
-    
 
     startWaveBtn.style.display = "block";
     updateHUD();
@@ -2029,7 +2035,25 @@ function unlockAchievement(key, message) {
 
 }
 
+function getUnlockedLevels() {
+  return JSON.parse(localStorage.getItem("unlockedLevels") || "[1]");
+}
 
+function unlockLevel(level) {
+  const unlocked = getUnlockedLevels();
+  if (!unlocked.includes(level)) {
+    unlocked.push(level);
+    localStorage.setItem("unlockedLevels", JSON.stringify(unlocked));
+  }
+}
+
+function evaluateLevelUnlocks(wavesCompleted) {
+  for (const [level, requiredWaves] of Object.entries(LEVEL_UNLOCKS)) {
+    if (wavesCompleted >= requiredWaves) {
+      unlockLevel(parseInt(level));
+    }
+  }
+}
 
 function updateHUD() {
     document.getElementById("goldDisplay").textContent = `💰 ${gold}`;
@@ -2293,6 +2317,42 @@ function resetDevProgress() {
     alert("🧹 Local storage cleared.");
 }
 
+function renderLevelButtons() {
+  const container = document.getElementById("levelButtons");
+  container.innerHTML = "";
+
+  const unlocked = getUnlockedLevels();
+
+  Object.entries(MAPS).forEach(([level, mapData]) => {
+    const btn = document.createElement("button");
+    btn.style.background = "none";
+    btn.style.border = "none";
+    btn.style.position = "relative";
+
+    const img = document.createElement("img");
+    img.src = `images/maps/level${level}.png`; // You provide this
+    img.style.width = "100px";
+    img.style.height = "auto";
+    img.style.borderRadius = "8px";
+    img.style.opacity = unlocked.includes(parseInt(level)) ? "1" : "0.4";
+
+    if (!unlocked.includes(parseInt(level))) {
+      const lockIcon = document.createElement("div");
+      lockIcon.textContent = "🔒";
+      lockIcon.style.position = "absolute";
+      lockIcon.style.top = "24px";
+      lockIcon.style.right = "86px";
+      lockIcon.style.fontSize = "18px";
+      lockIcon.style.color = "red";
+      btn.appendChild(lockIcon);
+    } else {
+      btn.onclick = () => loadLevel(parseInt(level));
+    }
+
+    btn.appendChild(img);
+    container.appendChild(btn);
+  });
+}
 
 
 gameLoop();
