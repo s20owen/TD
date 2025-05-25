@@ -2073,8 +2073,9 @@ function evaluateLevelUnlocks(wavesCompleted) {
 }
 
 function updateHUD() {
+    const displayWave = Math.min(wave, waves.length);
     document.getElementById("goldDisplay").textContent = `💰 ${gold}`;
-    document.getElementById("waveDisplay").textContent = `Wave ${wave + 1} / ${waves.length}`;
+    document.getElementById("waveDisplay").textContent = `Wave ${displayWave} / ${waves.length}`;
     document.getElementById("livesDisplay").textContent = `❤️ ${lives}`;
 }
 
