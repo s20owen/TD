@@ -508,7 +508,7 @@ const tileImages = {
 tileImages.G.src = 'images/grass.png';
 tileImages.P.src = 'images/path.png';
 tileImages.T.src = 'images/tree.png';
-tileImages.C.src = 'images/curve.png';
+tileImages.C.src = 'images/grass.png';
 tileImages.S = tileImages.P;
 tileImages.E = tileImages.P;
 
@@ -1347,6 +1347,11 @@ class LightningBullet {
           if (d <= this.radius) {
             e.health -= this.damage;
             
+            if (e.health <= 0) {
+                gold += ENEMY_STATS[e.type].reward;
+                totalGoldEarned += ENEMY_STATS[e.type].reward;
+                enemyKillCount++;
+            }
           }
         }
 
