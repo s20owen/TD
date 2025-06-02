@@ -38,7 +38,7 @@ const MAPS = {
          ['G',  'G',   'G',   'G',   'G',   'G',   'T',    'E',    'T', 'G', 'G', 'G']
         ],
         waves: 
-        generateWaves(35) // dynamically generating waves
+        generateWaves(45) // dynamically generating waves
     },
     2: {
         map: [
@@ -60,7 +60,7 @@ const MAPS = {
             ['G', 'G', 'E',  'G',  'G',  'G',  'G',  'G',  'G',  'G', 'G', 'G']
         ],
         waves: 
-        generateWaves(40)
+        generateWaves(50)
     },
     3: {
         map: [
