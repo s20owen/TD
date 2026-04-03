@@ -36,16 +36,46 @@ button:disabled {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: linear-gradient(to bottom, #222, #111);
+  background:
+    radial-gradient(circle at top, rgba(111, 255, 177, 0.14), transparent 32%),
+    linear-gradient(180deg, #1d2124 0%, #111416 68%, #0a0d0f 100%);
 }
 
+.level-select-shell {
+  width: min(100%, 980px);
+  padding: 28px 18px 92px;
+  box-sizing: border-box;
+}
+
+.level-select-copy {
+  text-align: center;
+  margin-bottom: 26px;
+}
+
+.level-select-kicker {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  color: #88f0bd;
+  margin-bottom: 10px;
+}
 
 #levelSelector h1 {
-  font-size: 32px;
-  margin-bottom: 20px;
+  font-size: clamp(34px, 7vw, 58px);
+  margin: 0;
+  color: #f7f2db;
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 }
 #levelSelector button {
-  width: 200px;
+  width: auto;
+}
+
+#levelSelectStatus {
+  margin: 12px auto 0;
+  max-width: 520px;
+  color: #b9c7cf;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 /* === Game Layout === */
@@ -63,11 +93,13 @@ button:disabled {
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 76px;
   background: #111;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
   padding: 0 4px;
   box-sizing: border-box;
   z-index: 1000;
@@ -82,6 +114,18 @@ button:disabled {
 #rankDisplay {
   margin-top: 2px;
 }
+#wavePreviewDisplay {
+  flex: 1 0 100%;
+  text-align: center;
+  font-size: 11px;
+  color: #c4d7ff;
+  margin-top: -6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 8px 2px;
+  box-sizing: border-box;
+}
 #hudBar button {
   font-size: 10px;
   padding: 4px 8px;
@@ -93,13 +137,104 @@ button:disabled {
 #gameCanvas {
   display: block;
   position: absolute;
-  top: 60px;
+  top: 76px;
   left: 0;
   width: 100%;
-  height: calc(100dvh - 60px - 76px); /* HUD + tower panel */
+  height: calc(100dvh - 76px - 76px); /* HUD + tower panel */
   background: #000;
   z-index: 1;
   image-rendering: pixelated;
+}
+
+.tower-drawer {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 84px;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(10, 14, 20, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+}
+
+.tower-drawer.is-open {
+  display: flex;
+}
+
+.tower-drawer__summary {
+  min-width: 0;
+  flex: 1;
+}
+
+.tower-drawer__title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff4b0;
+}
+
+.tower-drawer__meta,
+.tower-drawer__stats,
+.tower-drawer__next {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.tower-drawer__meta {
+  color: #cfe2ff;
+  margin-top: 2px;
+}
+
+.tower-drawer__stats {
+  color: #ffffff;
+  margin-top: 4px;
+}
+
+.tower-drawer__perks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.tower-drawer__perk {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  background: rgba(255,255,255,0.08);
+  color: #eff7ff;
+}
+
+.tower-drawer__perk--next {
+  background: rgba(114, 205, 255, 0.15);
+  color: #9fe4ff;
+}
+
+.tower-drawer__next {
+  color: #8fd3ff;
+  margin-top: 4px;
+}
+
+.tower-drawer__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.tower-drawer__actions button {
+  min-width: 116px;
+  margin: 0;
+  padding: 8px 10px;
+  font-size: 12px;
 }
 
 /* === Tower Panel (Legacy) === */
@@ -244,10 +379,54 @@ button:disabled {
 #overlayText {
   font-size: 20px;
   margin-bottom: 20px;
+  max-width: min(92vw, 560px);
+  text-align: center;
+  line-height: 1.45;
+  background: rgba(8, 10, 16, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 18px 22px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+}
+
+.overlay-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.overlay-details {
+  font-size: 15px;
+  color: #d7e6ff;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.overlay-actions button {
+  margin: 0;
+  min-width: 138px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(18, 24, 31, 0.95);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.24);
+}
+
+#restartBtn {
+  background: linear-gradient(180deg, #1f6d4b 0%, #184f37 100%);
+}
+
+#mapSelectBtn {
+  background: linear-gradient(180deg, #243443 0%, #1a2530 100%);
 }
 
 /* === Other Buttons === */
-#restartBtn, #speedToggleBtn, #pauseToggleBtn {
+#restartBtn, #mapSelectBtn, #speedToggleBtn, #pauseToggleBtn {
   margin: 10px;
 }
 #startWaveBtn {
@@ -264,18 +443,44 @@ button:disabled {
   z-index: 10;
 }
 
-/* === Tooltip === */
-#towerTooltip {
-  display: none;
-  position: absolute;
-  z-index: 1000;
-  background: #222;
-  color: white;
-  padding: 10px;
-  border-radius: 6px;
-  font-family: monospace;
-  font-size: 12px;
-  max-width: 254px;
+@media (max-width: 700px) {
+  .tower-drawer {
+    left: 6px;
+    right: 6px;
+    bottom: 82px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .tower-drawer__title {
+    font-size: 14px;
+  }
+
+  .tower-drawer__meta,
+  .tower-drawer__stats,
+  .tower-drawer__next,
+  .tower-drawer__actions button {
+    font-size: 11px;
+  }
+
+  .tower-drawer__perk {
+    font-size: 9px;
+  }
+
+  .tower-drawer__actions button {
+    min-width: 96px;
+    padding: 7px 8px;
+  }
+
+  .overlay-actions {
+    width: min(92vw, 320px);
+    flex-direction: column;
+  }
+
+  .overlay-actions button {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* === Dev Button === */
@@ -290,32 +495,124 @@ button:disabled {
 
 /* level locking  */
 #levelButtons{
-  display:flex; 
-  flex-wrap: wrap; 
-  gap: 12px; 
-  justify-content:center;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  align-items: stretch;
 }
 
-.level-container {
+#levelButtons button {
   position: relative;
-  display: inline-block;
-  margin: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background: rgba(14, 18, 22, 0.88);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 16px 30px rgba(0,0,0,0.22);
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+#levelButtons button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(136, 240, 189, 0.45);
+  box-shadow: 0 20px 36px rgba(0,0,0,0.28);
 }
 
 .level-thumbnail {
-  width: 100px;
-  height: 60px;
-  border-radius: 8px;
+  width: 100%;
+  height: 96px;
   object-fit: cover;
+  display: block;
 }
 
 .level-lock {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 24px;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
   pointer-events: none;
-  opacity: 0.85;
+  opacity: 0.95;
 }
 
+.level-card__body {
+  padding: 10px 12px 12px;
+  text-align: left;
+}
+
+.level-card__title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff1b4;
+}
+
+.level-card__desc {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #c6d0d6;
+  min-height: 32px;
+}
+
+.level-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #84d7ff;
+}
+
+.level-card__badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 3px 7px;
+  font-size: 10px;
+  border-radius: 999px;
+  background: rgba(6, 8, 10, 0.72);
+  color: #fff;
+  letter-spacing: 0.08em;
+}
+
+.level-card--locked .level-thumbnail {
+  filter: saturate(0.7) brightness(0.7);
+}
+
+.level-card--locked .level-card__title,
+.level-card--locked .level-card__desc {
+  color: #a8b0b5;
+}
+
+.level-card--locked .level-card__meta {
+  color: #d6ab73;
+}
+
+@media (max-width: 700px) {
+  .level-select-shell {
+    padding: 22px 14px 88px;
+  }
+
+  #levelButtons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .level-thumbnail {
+    height: 88px;
+  }
+
+  .level-card__body {
+    padding: 9px 10px 11px;
+  }
+
+  .level-card__title {
+    font-size: 14px;
+  }
+
+  .level-card__desc,
+  .level-card__meta {
+    font-size: 11px;
+  }
+}

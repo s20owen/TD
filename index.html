@@ -10,15 +10,19 @@
 
   <!-- Level Selector -->
   <div id="levelSelector">
-    <h1>Select Level</h1>
-    <div id="levelButtons"></div>
+    <div class="level-select-shell">
+      <div class="level-select-copy">
+        <div class="level-select-kicker">Field Ops</div>
+        <h1>Choose Your Front</h1>
+        <p id="levelSelectStatus">Progress sync online.</p>
+      </div>
+      <div id="levelButtons"></div>
+    </div>
     <button id="darkOpsBtn">🕶️ Dark Ops</button>
   </div>
 
   <!-- Game Container -->
   <div id="gameContainer" style="display:none;">
-
-    <div id="towerTooltip"></div>
 
     <!-- Top HUD Bar -->
     <div id="hudBar">
@@ -28,10 +32,25 @@
       <div id="rankDisplay">Rank 1</div>
       <button id="pauseBtn" onclick="togglePause()">⏸</button>
       <button id="speedToggleBtn" onclick="toggleSpeed()">⏩</button>
+      <div id="wavePreviewDisplay">Next: scouting wave</div>
     </div>
 
     <!-- Canvas for Game -->
     <canvas id="gameCanvas"></canvas>
+
+    <div id="towerDrawer" class="tower-drawer" aria-hidden="true">
+      <div class="tower-drawer__summary">
+        <div id="towerDrawerTitle" class="tower-drawer__title">Tower</div>
+        <div id="towerDrawerMeta" class="tower-drawer__meta">Role</div>
+        <div id="towerDrawerStats" class="tower-drawer__stats">Level</div>
+        <div id="towerDrawerPerks" class="tower-drawer__perks"></div>
+        <div id="towerDrawerNext" class="tower-drawer__next">Next upgrade</div>
+      </div>
+      <div class="tower-drawer__actions">
+        <button id="towerDrawerUpgradeBtn">Upgrade</button>
+        <button id="towerDrawerSellBtn">Sell</button>
+      </div>
+    </div>
 
     <!-- Bottom Tower Selector Panel -->
    <div id="towerPanel" class="tower-panel">
@@ -47,7 +66,10 @@
     <!-- Overlay Messages (Game Over / Level Complete) -->
     <div id="overlayMessage">
       <div id="overlayText"></div>
-      <button id="restartBtn">Restart</button>
+      <div class="overlay-actions">
+        <button id="restartBtn">Retry Map</button>
+        <button id="mapSelectBtn">Back to Maps</button>
+      </div>
     </div>
   </div>
   

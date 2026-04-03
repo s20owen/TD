@@ -7,13 +7,37 @@
 const ENEMY_STATS = {
     basic:   { health: 100, speed: 1.2, reward: 10, livesLost: 1 },
     fast:    { health: 60,  speed: 2.0, reward: 15, livesLost: 1 },
+    rusher:  { health: 50,  speed: 2.9, reward: 16, livesLost: 1 },
     tank:    { health: 1000, speed: 0.6, reward: 30, livesLost: 3 },
+    bruiser: { health: 2600, speed: 0.5, reward: 42, livesLost: 4 },
+    shield:  { health: 180, speed: 1.0, reward: 22, livesLost: 1, shield: 120 },
+    resistant: { health: 340, speed: 1.05, reward: 26, livesLost: 1, resistances: { spread: 0.38, lightning: 0.52, splash: 0.72 } },
+    commander: { health: 220, speed: 1.15, reward: 28, livesLost: 2, auraRange: 2.2, auraBoost: 0.16 },
+    bulwark: { health: 260, speed: 0.92, reward: 32, livesLost: 2, auraRange: 2.3, damageReduction: 0.22 },
     boss:    { health: 7000, speed: 0.4, reward: 200, livesLost: 99 },
     splitter:{ health: 200, speed: 1.1, reward: 20, livesLost: 1 },
     mini:    { health: 40,  speed: 1.8, reward: 5, livesLost: 1 },
     healer:  { health: 120, speed: 1.0, reward: 15, livesLost: 1 },
     stealth: { health: 80,  speed: 1.5, reward: 12, livesLost: 1 },
     megaBoss: {health: 20000, speed: 0.5, reward: 1000, livesLost: 99}
+};
+
+const ENEMY_GUIDE = {
+    basic: { label: "basic", intro: "Standard enemy. No special abilities.", counter: "Any early tower handles these." },
+    fast: { label: "fast", intro: "Moves quickly. Can slip through defenses!", counter: "Use broad coverage or slow support." },
+    rusher: { label: "rusher", intro: "Extremely fast but fragile. Punishes weak lane coverage.", counter: "Spread, lightning, or good map coverage." },
+    tank: { label: "tank", intro: "High health. Slow but dangerous.", counter: "Sniper and poison are your best answers." },
+    bruiser: { label: "bruiser", intro: "Massive health and heavy leaks. Demands real single-target damage.", counter: "Sniper, poison, and focused support are the cleanest answers." },
+    shield: { label: "shield", intro: "Starts with a shield that shrugs off weak hits. Burst it down.", counter: "Sniper, splash, and lightning break shields faster." },
+    resistant: { label: "resistant", intro: "Shrugs off anti-swarm damage and punishes one-note builds.", counter: "Sniper, poison, and basic towers handle it better than spread or lightning." },
+    commander: { label: "commander", intro: "Boosts nearby enemies. A dangerous priority target.", counter: "Pick it off quickly with sniper or focused burst." },
+    bulwark: { label: "bulwark", intro: "Projects a damage-reduction aura that protects nearby enemies.", counter: "Focus the bulwark first or your lane damage will feel muted." },
+    boss: { label: "boss", intro: "Massive health. Reaching the end means game over!", counter: "Single-target damage and attrition both matter." },
+    megaBoss: { label: "mega boss", intro: "Enormous and slow. Spawns two Bosses when killed!", counter: "Bring stacked boss damage and support." },
+    splitter: { label: "splitter", intro: "Splits into two mini enemies when killed.", counter: "Splash and lightning help contain the spawn burst." },
+    mini: { label: "mini", intro: "Small, fast offspring of a splitter.", counter: "Use anti-swarm towers or broad coverage." },
+    healer: { label: "healer", intro: "Heals nearby enemies slowly over time.", counter: "Prioritize it before the whole wave thickens up." },
+    stealth: { label: "stealth", intro: "Can only be targeted by upgraded towers.", counter: "Upgrade key towers before stealth-heavy rounds." }
 };
 
 // Map/Level 12 cols x 16 rows
@@ -83,6 +107,50 @@ const MAPS = {
         ],
         waves: 
         generateWaves(55)
+    },
+    4: {
+        map: [
+        ['S','P1','P2','P3','P4','P5','P6','P7','P8','P9','P10','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P11','G'],
+        ['G','T','G','G','G','G','G','G','G','G','P12','G'],
+        ['G','G','G','G','G','G','G','G','G','T','P13','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P14','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P15','G'],
+        ['G','T','G','G','G','G','G','G','G','G','P16','G'],
+        ['G','G','G','G','G','G','G','G','G','T','P17','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P18','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P19','G'],
+        ['G','T','G','G','G','G','G','G','G','G','P20','G'],
+        ['G','G','G','G','G','G','G','G','G','T','P21','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P22','G'],
+        ['G','G','G','G','G','G','G','G','G','G','P23','G'],
+        ['G','T','G','G','G','G','G','G','G','T','P24','G'],
+        ['E','P34','P33','P32','P31','P30','P29','P28','P27','P26','P25','G']
+        ],
+        waves:
+        generateWaves(60)
+    },
+    5: {
+        map: [
+        ['G','G','S','G','G','G','G','G','G','G','G','G'],
+        ['G','G','P1','P2','P3','P4','P5','P6','P7','P8','G','G'],
+        ['G','T','G','G','G','G','G','G','G','P9','G','G'],
+        ['G','G','G','G','G','G','G','G','G','P10','T','G'],
+        ['G','G','P18','P17','P16','P15','P14','P13','P12','P11','G','G'],
+        ['G','G','P19','G','T','G','G','T','G','G','G','G'],
+        ['G','G','P20','G','G','G','G','G','G','G','T','G'],
+        ['G','G','P21','P22','P23','P24','P25','P26','P27','G','G','G'],
+        ['G','T','G','G','G','G','G','G','P28','G','G','G'],
+        ['G','G','G','T','G','G','T','G','P29','G','G','G'],
+        ['G','G','P37','P36','P35','P34','P33','P32','P31','P30','G','G'],
+        ['G','G','P38','G','G','G','G','G','G','G','T','G'],
+        ['G','T','P39','G','G','T','G','G','G','G','G','G'],
+        ['G','G','P40','P41','P42','P43','P44','P45','P46','G','G','G'],
+        ['G','G','G','G','G','G','G','G','P47','G','T','G'],
+        ['G','G','G','G','G','G','G','G','E','G','G','G']
+        ],
+        waves:
+        generateWaves(65)
     }
 };
 
@@ -105,7 +173,17 @@ let wavesCompleted = parseInt(localStorage.getItem("wavesCompleted")) || 0;
 
 const LEVEL_UNLOCKS = {
   2: 30, // add more levels as needed
-  3: 40
+  3: 40,
+  4: 50,
+  5: 60
+};
+
+const LEVEL_META = {
+  1: { name: "Green Line", blurb: "Balanced opener with simple coverage tests.", focus: "Balanced", waves: 45, intro: "Straightforward lanes ease you into mixed tower coverage.", tactic: "Open with flexible towers, then branch into anti-tank or anti-swarm as waves specialize." },
+  2: { name: "Crosswind", blurb: "Long side lane rewards steady range and timing.", focus: "Reach", waves: 50, intro: "A long outer lane gives range towers time to work before enemies turn the corner.", tactic: "Sniper and poison get extra value here, but keep one coverage tower near the turn." },
+  3: { name: "Split March", blurb: "Weaving route favors coverage over tunnel vision.", focus: "Coverage", waves: 55, intro: "The path loops across the map and punishes overcommitting to one firing lane.", tactic: "Build overlapping coverage and let support towers amplify several lanes at once." },
+  4: { name: "Kill Box", blurb: "Huge sightlines reward sniper, poison, and support stacking.", focus: "Long lanes", waves: 60, intro: "Long horizontal and vertical lanes let single-target towers fire for extended windows.", tactic: "Lean into sniper, poison, and slow support, then add just enough anti-swarm near the exit." },
+  5: { name: "Switchback", blurb: "Tight turns and repeated corners reward anti-swarm control.", focus: "Corners", waves: 65, intro: "Compact turns keep enemies clumped and repeatedly re-entering tower arcs.", tactic: "Spread, splash, and lightning thrive here. Prioritize broad coverage over isolated boss lanes." }
 };
 /* dynamic way to unlock levels
  const LEVEL_UNLOCKS = {};
@@ -115,8 +193,6 @@ const LEVEL_UNLOCKS = {
     }
  */
 
-
-renderLevelButtons();
 // Toggle dev panel on/off
 let showDebugStats = false; 
 
@@ -134,15 +210,25 @@ const achievementBox = document.getElementById("achievements");
 // Game Variables
 let pausedForIntro = false;
 let TILE_SIZE = 64;
-let wave = 0, gold = 250, lives = 10;
+const STARTING_GOLD = 275;
+let currentLevel = 1;
+let wave = 0, gold = STARTING_GOLD, lives = 10;
 let towers = [], enemies = [], bullets = [], splitQueue = [];
 let gameWon = false, gameOver = false, paused = false, isWaveActive = false;
 let waveQueue = [], waveTimer = 0, currentMap = [], waves = [], enemyPath = [];
 let damageNumbers = [], floatingMessages = [], seenEnemyTypes = new Set();
 let selectedTowerType = null, selectedTower = null, hoveredTower = null;
+let hoveredBuildTile = null;
 let waveIntroQueue = [], introMessage = null, introTimer = 0, bossWarning = null;
 let totalGoldEarned = 0, enemyKillCount = 0, towerActionUI = null;
 let gameSpeed = 1;
+let currentWaveStartLives = 10;
+let waveReadyAt = 0;
+let pendingRushBonus = 0;
+let leakEvents = [];
+let leakFlashEffects = [];
+let towerIdCounter = 1;
+let towerDrawerState = null;
 const lightningAnimations = [];
 const LIGHTNING_FRAMES = [];
 for (let i = 1; i <= 11; i++) {
@@ -183,6 +269,56 @@ const rankTable = [
 let playerPoints = parseInt(localStorage.getItem("playerPoints")) || 0;
 let playerRank = parseInt(localStorage.getItem("playerRank")) || 1;
 
+function getStoredNumber(key, fallback = 0) {
+  const raw = localStorage.getItem(key);
+  if (raw === null) return fallback;
+  const value = parseInt(raw, 10);
+  return Number.isFinite(value) ? value : fallback;
+}
+
+function getUnlockedLevels() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem("unlockedLevels") || "[1]");
+    const normalized = Array.isArray(parsed) ? parsed.map(level => parseInt(level, 10)).filter(Number.isFinite) : [1];
+    if (!normalized.includes(1)) normalized.push(1);
+    return [...new Set(normalized)].sort((a, b) => a - b);
+  } catch {
+    return [1];
+  }
+}
+
+function setUnlockedLevels(levels) {
+  const normalized = [...new Set(levels.map(level => parseInt(level, 10)).filter(Number.isFinite))].sort((a, b) => a - b);
+  if (!normalized.includes(1)) normalized.unshift(1);
+  localStorage.setItem("unlockedLevels", JSON.stringify(normalized));
+  return normalized;
+}
+
+function unlockLevel(level) {
+  const unlocked = getUnlockedLevels();
+  if (!unlocked.includes(level)) {
+    unlocked.push(level);
+    return setUnlockedLevels(unlocked);
+  }
+  return unlocked;
+}
+
+function evaluateLevelUnlocks(wavesCompleted) {
+  for (const [level, requiredWaves] of Object.entries(LEVEL_UNLOCKS)) {
+    if (wavesCompleted >= requiredWaves) {
+      unlockLevel(parseInt(level));
+    }
+  }
+}
+
+function initializeProgressState() {
+  wavesCompleted = getStoredNumber("wavesCompleted", 0);
+  playerPoints = getStoredNumber("playerPoints", 0);
+  playerRank = Math.max(1, getStoredNumber("playerRank", 1));
+  setUnlockedLevels(getUnlockedLevels());
+  evaluateLevelUnlocks(wavesCompleted);
+}
+
 function saveProgress() {
   localStorage.setItem("playerPoints", playerPoints);
   localStorage.setItem("playerRank", playerRank);
@@ -197,9 +333,9 @@ function gainPoints(amount) {
     nextRank++;
   }
 
-  if (nextRank !== playerRank) {
+    if (nextRank !== playerRank) {
     playerRank = nextRank;
-    addFloatingMessage("🏅 Rank Up!", canvas.width / 2, 60, "yellow");
+    addFloatingMessage("🏅 Rank Up!", canvas.width / 2, 60, "yellow", true);
   }
 
   saveProgress();
@@ -233,6 +369,14 @@ function handleEnemyKill(enemyType) {
 }
 
 function handleWaveComplete() {
+  const perfectWave = lives === currentWaveStartLives;
+  const survivalBonus = Math.max(8, 6 + wave * 2);
+  const perfectBonus = perfectWave ? 12 + wave * 3 : 0;
+  gold += survivalBonus + perfectBonus;
+  addFloatingMessage(`Wave Bonus +$${survivalBonus}`, canvas.width / 2, 82, "#ffd166", true);
+  if (perfectBonus > 0) {
+    addFloatingMessage(`Perfect Defense +$${perfectBonus}`, canvas.width / 2, 102, "#8cffb5", true);
+  }
   gainPoints(lives); // +5 for wave, +1 per life
     // ✅ Update wave progress
     const maxWaves = Math.max(wavesCompleted, wave + 1); // wave is 0-indexed
@@ -249,6 +393,20 @@ function handleLevelComplete() {
     renderLevelButtons();
 }
 
+function calculateRushBonus() {
+    if (!waveReadyAt || wave >= waves.length) return 0;
+    const elapsedSeconds = (Date.now() - waveReadyAt) / 1000;
+    const baseBonus = 18 + wave * 2;
+    const decay = Math.min(baseBonus, Math.floor(elapsedSeconds * 3));
+    return Math.max(0, baseBonus - decay);
+}
+
+function refreshStartWaveButton() {
+    if (!startWaveBtn) return;
+    pendingRushBonus = calculateRushBonus();
+    startWaveBtn.textContent = pendingRushBonus > 0 ? `Start Wave (+$${pendingRushBonus})` : "Start Wave";
+}
+
 // Unlocks based on new ranks
 const towerUnlocks = {
   basic: 1,
@@ -260,68 +418,155 @@ const towerUnlocks = {
   slow: 14
 };
 
+function createWaveData(label, advisory, enemies) {
+    return { label, advisory, enemies };
+}
+
+function getBaseWaveLabel(waveNumber) {
+    if (waveNumber < 4) return { label: "Opening Line", advisory: "Baseline pressure to establish your first defenses." };
+    if (waveNumber < 8) return { label: "Field Pressure", advisory: "Mixed movement pressure starts testing lane coverage." };
+    if (waveNumber < 14) return { label: "Armor Probe", advisory: "Expect tougher targets mixed into the line." };
+    if (waveNumber < 20) return { label: "Midwave Escalation", advisory: "Waves start combining support and speed threats." };
+    return { label: "Latewave Surge", advisory: "Sustained combined-arms pressure. Weak spots get punished fast." };
+}
+
+function buildWaveScenario(waveNumber, totalWaves) {
+    const enemyQueue = [];
+    const basicCount = Math.floor(5 + waveNumber * 1.05);
+    for (let j = 0; j < basicCount; j++) enemyQueue.push("basic");
+
+    if (waveNumber >= 3) {
+        const fastCount = Math.floor(waveNumber / 2.2);
+        for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
+    }
+    if (waveNumber >= 5) {
+        const tankCount = Math.floor(waveNumber / 4.2);
+        for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
+    }
+    if (waveNumber >= 9) {
+        const bruiserCount = Math.floor(waveNumber / 9);
+        for (let j = 0; j < bruiserCount; j++) enemyQueue.push("bruiser");
+    }
+    if (waveNumber >= 6) {
+        const rusherCount = Math.floor(waveNumber / 3.6);
+        for (let j = 0; j < rusherCount; j++) enemyQueue.push("rusher");
+    }
+    if (waveNumber >= 8) {
+        const shieldCount = Math.max(1, Math.floor(waveNumber / 6));
+        for (let j = 0; j < shieldCount; j++) enemyQueue.push("shield");
+    }
+    if (waveNumber >= 11) {
+        const resistantCount = Math.max(1, Math.floor(waveNumber / 7));
+        for (let j = 0; j < resistantCount; j++) enemyQueue.push("resistant");
+    }
+    if (waveNumber >= 10) {
+        const splitterCount = Math.floor(waveNumber / 5);
+        for (let j = 0; j < splitterCount; j++) enemyQueue.push("splitter");
+    }
+    if (waveNumber >= 12 && waveNumber % 3 === 0) {
+        const stealthCount = Math.floor(waveNumber / 4);
+        for (let j = 0; j < stealthCount; j++) enemyQueue.push("stealth");
+    }
+    if (waveNumber >= 12 && (waveNumber % 6 === 0 || waveNumber >= 24)) {
+        const healerCount = Math.max(1, Math.floor(waveNumber / 7));
+        for (let j = 0; j < healerCount; j++) enemyQueue.push("healer");
+    }
+    if (waveNumber >= 15 && (waveNumber % 5 === 0 || waveNumber >= 28)) {
+        const commanderCount = Math.max(1, Math.floor(waveNumber / 10));
+        for (let j = 0; j < commanderCount; j++) enemyQueue.push("commander");
+    }
+    if (waveNumber >= 13 && (waveNumber % 5 === 3 || waveNumber >= 26)) {
+        const bulwarkCount = Math.max(1, Math.floor(waveNumber / 11));
+        for (let j = 0; j < bulwarkCount; j++) enemyQueue.push("bulwark");
+    }
+    if (waveNumber >= 16 && waveNumber % 2 === 0) {
+        const miniCount = Math.floor(waveNumber * 1.3);
+        for (let j = 0; j < miniCount; j++) enemyQueue.push("mini");
+    }
+    if (waveNumber >= 20 && waveNumber % 2 === 0) {
+        const bossCount = Math.floor(waveNumber / 12);
+        for (let j = 0; j < bossCount; j++) enemyQueue.push("boss");
+    }
+
+    let scenario = getBaseWaveLabel(waveNumber);
+
+    if (waveNumber === totalWaves) {
+        enemyQueue.push("megaBoss");
+        scenario = {
+            label: "Final Stand",
+            advisory: "Mega boss pressure. Bring boss damage and enough control to survive the split."
+        };
+    } else if (waveNumber >= 20 && waveNumber % 10 === 0) {
+        enemyQueue.push("boss", "shield", "tank");
+        scenario = {
+            label: "Boss Detachment",
+            advisory: "A boss arrives with frontline cover. Burst and anti-armor both matter."
+        };
+    } else if (waveNumber >= 15 && waveNumber % 6 === 0) {
+        enemyQueue.push("commander", "shield", "rusher", "fast", "fast");
+        scenario = {
+            label: "Commander Escort",
+            advisory: "Support aura behind a fast screen. Pick the commander off before the lane snowballs."
+        };
+    } else if (waveNumber >= 18 && waveNumber % 7 === 0) {
+        enemyQueue.push("bulwark", "shield", "resistant", "basic", "fast");
+        scenario = {
+            label: "Bulwark Phalanx",
+            advisory: "A support bulwark blunts your damage output. Remove it before the frontline overwhelms you."
+        };
+    } else if (waveNumber >= 14 && waveNumber % 5 === 2) {
+        enemyQueue.push("resistant", "resistant", "fast", "rusher", "basic");
+        scenario = {
+            label: "Resistance Screen",
+            advisory: "Anti-swarm towers get checked hard here. Bring single-target answers behind your coverage."
+        };
+    } else if (waveNumber >= 10 && waveNumber % 6 === 1) {
+        enemyQueue.push("bruiser", "tank", "basic", "basic");
+        scenario = {
+            label: "Bruiser Check",
+            advisory: "A heavy body enters the lane. If you lack real anti-tank damage, leaks get expensive."
+        };
+    } else if (waveNumber >= 12 && waveNumber % 5 === 0) {
+        enemyQueue.push("shield", "shield", "tank", "basic", "basic");
+        scenario = {
+            label: "Shielded Front",
+            advisory: "A protected frontline tests burst damage and anti-armor coverage."
+        };
+    } else if (waveNumber >= 10 && waveNumber % 4 === 0) {
+        enemyQueue.push("rusher", "rusher", "rusher", "fast", "fast", "mini");
+        scenario = {
+            label: "Rusher Burst",
+            advisory: "Fast lane pressure. Broad coverage beats tunnel vision here."
+        };
+    } else if (waveNumber >= 14 && waveNumber % 7 === 0) {
+        enemyQueue.push("stealth", "stealth", "fast", "rusher");
+        scenario = {
+            label: "Stealth Sweep",
+            advisory: "Hidden pressure checks your upgraded coverage and map awareness."
+        };
+    } else if (waveNumber >= 16 && waveNumber % 5 === 1) {
+        enemyQueue.push("splitter", "splitter", "mini", "mini", "fast");
+        scenario = {
+            label: "Splitter Spill",
+            advisory: "Death spawns can overflow weak lanes. Splash and chain damage shine here."
+        };
+    } else if (waveNumber >= 18 && waveNumber % 6 === 3) {
+        enemyQueue.push("tank", "tank", "healer", "shield");
+        scenario = {
+            label: "Attrition Test",
+            advisory: "Durable enemies with sustain punish low single-target damage."
+        };
+    }
+
+    shuffleArray(enemyQueue);
+    return createWaveData(scenario.label, scenario.advisory, enemyQueue);
+}
+
 function generateWaves(totalWaves = 50) {
     const waves = [];
 
     for (let i = 1; i <= totalWaves; i++) {
-        const enemyQueue = [];
-
-        const difficulty = 1 + i * 0.12;
-
-        // Always basic
-        const basicCount = Math.floor(5 + i * 1.1);
-        for (let j = 0; j < basicCount; j++) enemyQueue.push("basic");
-
-        // Fast enemies after wave 3
-        if (i >= 3) {
-            const fastCount = Math.floor(i / 2);
-            for (let j = 0; j < fastCount; j++) enemyQueue.push("fast");
-        }
-
-        // Tanks after wave 5, more as wave increases
-        if (i >= 5) {
-            const tankCount = Math.floor(i / 3.5);
-            for (let j = 0; j < tankCount; j++) enemyQueue.push("tank");
-        }
-
-        // Healers every 6th wave, ramping after wave 20
-        if (i % 6 === 0 || i >= 20) {
-            const healerCount = i >= 20 ? Math.floor(Math.random() * (i / 5)) + 1 : Math.floor(i / 6);
-            for (let j = 0; j < healerCount; j++) enemyQueue.push("healer");
-        }
-
-        // Splitters start from wave 10
-        if (i >= 10) {
-            const splitterCount = Math.floor(i / 4);
-            for (let j = 0; j < splitterCount; j++) enemyQueue.push("splitter");
-        }
-
-        // Stealth units from wave 12+
-        if (i >= 12 && i % 3 === 0) {
-            const stealthCount = Math.floor(i / 3.5);
-            for (let j = 0; j < stealthCount; j++) enemyQueue.push("stealth");
-        }
-
-        // Mini enemies swarm after wave 15
-        if (i >= 15 && i % 2 === 0) {
-            const miniCount = Math.floor(i * 1.5);
-            for (let j = 0; j < miniCount; j++) enemyQueue.push("mini");
-        }
-
-        // Boss logic
-        if (i >= 20 && i % 2 === 0) {
-            const bossCount = Math.floor(i / 10);
-            for (let j = 0; j < bossCount; j++) enemyQueue.push("boss");
-        }
-
-        // MegaBoss only at last wave
-        if (i === totalWaves) {
-            enemyQueue.push("megaBoss");
-        }
-
-        // Shuffle to add unpredictability
-        shuffleArray(enemyQueue);
-        waves.push(enemyQueue);
+        waves.push(buildWaveScenario(i, totalWaves));
     }
 
     return waves;
@@ -382,13 +627,13 @@ function updateTowerButtons() {
 
 // Tower Cost
 const towerCosts = {
-    basic: 100,
-    spread: 120,
-    sniper: 150,
-    poison: 200,
-    splash: 300,
-    lightning: 300,
-    slow: 250
+    basic: 90,
+    spread: 130,
+    sniper: 180,
+    poison: 195,
+    splash: 290,
+    lightning: 285,
+    slow: 255
 };
 
 const towerInfo = {
@@ -397,13 +642,16 @@ const towerInfo = {
         cost: towerCosts.basic,
         unlock: towerUnlocks.basic,
         image: "images/basictower.png",
-        baseDamage: 20,
-        damageScale: 6,
-        description: "Fires a single shot quickly at nearby enemies.",
+        role: "All-rounder",
+        weakness: "Falls off against armored late-wave targets.",
+        baseDamage: 16,
+        damageScale: 3,
+        description: "Cheap reliable tower that covers early waves, but struggles to scale into tanky rounds.",
         upgrades: [
-            "Faster firing",
-            "More damage",
-            "Slight range boost"
+            "Lv2: Better stealth coverage",
+            "Lv3: Faster combat cadence",
+            "Lv4: Finisher bonus on weakened enemies",
+            "Lv5: Stronger cleanup pressure"
         ]
     },
     spread: {
@@ -411,13 +659,16 @@ const towerInfo = {
         cost: towerCosts.spread,
         unlock: towerUnlocks.spread,
         image: "images/spreadtower.png",
-        baseDamage: 25,
-        damageScale: 7,
-        description: "Fires a spread of bullets at short range.",
+        role: "Anti-swarm",
+        weakness: "Poor into tanks and bosses.",
+        baseDamage: 13,
+        damageScale: 2,
+        description: "Covers short-range lanes with multiple pellets and shreds light enemies in groups.",
         upgrades: [
-            "More bullets",
-            "Tighter spread",
-            "Damage increase"
+            "Lv2: Extra pellet spread",
+            "Lv3: Longer pellet reach",
+            "Lv4: Wider cone coverage",
+            "Lv5: Pellets pierce one extra target"
         ]
     },
     sniper: {
@@ -425,13 +676,16 @@ const towerInfo = {
         cost: towerCosts.sniper,
         unlock: towerUnlocks.sniper,
         image: "images/snipertower.png",
-        baseDamage: 75,
-        damageScale: 8,
-        description: "High damage, long-range shots. Slow rate of fire.",
+        role: "Single-target",
+        weakness: "Can be overwhelmed by swarms.",
+        baseDamage: 84,
+        damageScale: 12,
+        description: "Deletes priority targets at long range, but only fires one slow shot at a time.",
         upgrades: [
-            "Even longer range",
-            "Faster reload",
-            "Extra damage"
+            "Lv2: Better stealth coverage",
+            "Lv3: Shots pierce a second target",
+            "Lv4: Faster reload on priority kills",
+            "Lv5: Boss hunter bonus damage"
         ]
     },
     splash: {
@@ -439,13 +693,16 @@ const towerInfo = {
         cost: towerCosts.splash,
         unlock: towerUnlocks.splash,
         image: "images/splashtower.png",
-        baseDamage: 55,
-        damageScale: 9,
-        description: "Deals area damage to groups of enemies.",
+        role: "Anti-clump",
+        weakness: "Slow attack speed.",
+        baseDamage: 36,
+        damageScale: 7,
+        description: "Punishes tightly packed enemies with area damage, but reloads slowly between shots.",
         upgrades: [
-            "Larger explosion radius",
-            "More damage",
-            "Faster attack"
+            "Lv2: Larger blast radius",
+            "Lv3: Heavier anti-pack splash",
+            "Lv4: Concussive slow on impact",
+            "Lv5: Bigger control radius"
         ]
     },
     poison: {
@@ -453,15 +710,16 @@ const towerInfo = {
         cost: towerCosts.poison,
         unlock: towerUnlocks.poison,
         image: "images/poisontower.png",
-        baseDamage: 25,
-        damageScale: 8,
-        description: "Applies damage-over-time to enemies with a toxic projectile.",
+        role: "High-health attrition",
+        weakness: "Low burst damage.",
+        baseDamage: 11,
+        damageScale: 2,
+        description: "Melts durable enemies over time and gets more value the longer targets stay alive.",
         upgrades: [
-          "Increases DoT duration",
-          "Increases poison damage",
-          "Fires faster",
-          "Hits multiple targets",
-          "Spreads poison on kill"
+          "Lv2: Better stealth coverage",
+          "Lv3: Longer venom duration",
+          "Lv4: Faster poison ticking",
+          "Lv5: Venom jumps to a nearby target"
         ]
     },
     lightning: {
@@ -469,15 +727,16 @@ const towerInfo = {
         cost: towerCosts.lightning,
         unlock: towerUnlocks.lightning,
         image: "images/lightningtower.png",
-        baseDamage: 60,
-        damageScale: 8,
-        description: "Applies damage-over-time to enemies with a toxic projectile.",
+        role: "Chain control",
+        weakness: "Less efficient on isolated tanks.",
+        baseDamage: 26,
+        damageScale: 5,
+        description: "Excels when enemies arrive in medium packs by chaining damage around the impact point.",
         upgrades: [
-          "Increases DoT duration",
-          "Increases poison damage",
-          "Fires faster",
-          "Hits multiple targets",
-          "Spreads poison on kill"
+          "Lv2: Larger chain radius",
+          "Lv3: Stronger pack damage",
+          "Lv4: Shock briefly slows struck enemies",
+          "Lv5: Better chain follow-through"
         ]
     },
     slow: {
@@ -485,21 +744,328 @@ const towerInfo = {
         cost: towerCosts.slow,
         unlock: towerUnlocks.slow,
         image: "images/slowtower.png",
-        slowAmount: 0.6,  // Reduces speed by 60%
-        slowScale: 0.02,  // Extra slow per level (e.g., +2% per level)
-        duration: 160,    // Duration of slow in frames (2 seconds)
-        durationScale: 20, // Extra duration per level
-        description: "Applies damage-over-time to enemies with a toxic projectile.",
+        slowAmount: 0.54,  // Reduces speed by 54%
+        slowScale: 0.018,  // Extra slow per level
+        duration: 145,    // Duration of slow in frames
+        durationScale: 18, // Extra duration per level
+        role: "Support",
+        weakness: "Almost no direct damage.",
+        description: "Slows enemies so your other towers have more time to finish them off.",
         upgrades: [
-          "Increases DoT duration",
-          "Increases poison damage",
-          "Fires faster",
-          "Hits multiple targets",
-          "Spreads poison on kill"
+          "Lv2: Better stealth coverage",
+          "Lv3: Slow pulse affects nearby enemies",
+          "Lv4: Larger support radius",
+          "Lv5: Primary target gets crippled harder"
         ]
     }
 };
 const towerTypes = Object.keys(towerInfo);
+
+function getTowerRange(type, level) {
+    const rangeTiles = {
+        basic: 1.9,
+        spread: 1.55,
+        sniper: 4.65,
+        splash: 2.2,
+        poison: 2.1,
+        lightning: 2.4,
+        slow: 2.65
+    };
+    const perLevelTiles = {
+        basic: 0.04,
+        spread: 0.02,
+        sniper: 0.12,
+        splash: 0.05,
+        poison: 0.06,
+        lightning: 0.05,
+        slow: 0.08
+    };
+    return TILE_SIZE * ((rangeTiles[type] || 1.8) + (perLevelTiles[type] || 0.04) * (level - 1));
+}
+
+function getTowerCooldown(type, level) {
+    const baseCooldown = {
+        basic: 24,
+        spread: 34,
+        sniper: 96,
+        splash: 60,
+        poison: 42,
+        lightning: 40,
+        slow: 56
+    };
+    const cooldownStep = {
+        basic: 1.4,
+        spread: 1.0,
+        sniper: 3.0,
+        splash: 2.0,
+        poison: 1.2,
+        lightning: 1.4,
+        slow: 1.2
+    };
+    return Math.max(14, (baseCooldown[type] || 30) - (cooldownStep[type] || 1) * (level - 1));
+}
+
+function getTowerDamageMultiplier(towerType, enemyType) {
+    switch (towerType) {
+        case "basic":
+            if (["tank", "boss", "megaBoss"].includes(enemyType)) return 0.72;
+            return 1;
+        case "spread":
+            if (["tank", "boss", "megaBoss"].includes(enemyType)) return 0.45;
+            if (["fast", "mini", "splitter", "stealth"].includes(enemyType)) return 1.25;
+            return 1;
+        case "sniper":
+            if (["tank", "boss", "megaBoss", "healer", "bulwark"].includes(enemyType)) return 1.28;
+            if (["mini", "fast", "rusher"].includes(enemyType)) return 0.82;
+            return 1;
+        case "splash":
+            if (["fast", "mini", "splitter"].includes(enemyType)) return 1.18;
+            if (["boss", "megaBoss"].includes(enemyType)) return 0.72;
+            return 1;
+        case "poison":
+            if (["tank", "boss", "megaBoss", "bruiser"].includes(enemyType)) return 1.22;
+            return 0.8;
+        case "lightning":
+            if (["fast", "splitter", "healer", "stealth"].includes(enemyType)) return 1.15;
+            if (["tank", "boss", "megaBoss", "bruiser"].includes(enemyType)) return 0.76;
+            return 1;
+        case "slow":
+            return 0;
+        default:
+            return 1;
+    }
+}
+
+function getAdjustedTowerDamage(baseDamage, towerType, enemy, level = 1) {
+    if (!enemy) return baseDamage;
+    const multiplier = getTowerDamageMultiplier(towerType, enemy.type);
+    const scaled = baseDamage * multiplier;
+    if (enemy.type === "stealth" && towerType !== "sniper" && level < 2) {
+        return 0;
+    }
+    return Math.max(0, Math.round(scaled));
+}
+
+function getPoisonTickDamage(target, level) {
+    const percentDamage = target.maxHealth * (0.012 + level * 0.0035);
+    const flatDamage = 8 + level * 3;
+    return Math.round(Math.max(flatDamage, percentDamage));
+}
+
+function getTowerSpecials(type, level) {
+    switch (type) {
+        case "basic":
+            return {
+                executeThreshold: level >= 4 ? 0.35 : 0,
+                executeBonus: level >= 5 ? 1.45 : 1.25
+            };
+        case "spread":
+            return {
+                pelletCount: 3 + level + (level >= 4 ? 1 : 0),
+                coneWidth: level >= 4 ? Math.PI / 2 : Math.PI / 2.4,
+                maxDistance: TILE_SIZE * (level >= 3 ? 3.8 : 3),
+                pierce: level >= 5 ? 1 : 0
+            };
+        case "sniper":
+            return {
+                pierceTargets: level >= 3 ? 1 : 0,
+                bossBonus: level >= 5 ? 1.42 : 1,
+                killReloadMultiplier: level >= 4 ? 0.72 : 1
+            };
+        case "splash":
+            return {
+                impactSlowFactor: level >= 4 ? 0.75 : 1,
+                impactSlowDuration: level >= 4 ? 55 + level * 8 : 0,
+                blastRadiusBonus: level >= 5 ? TILE_SIZE * 0.18 : 0
+            };
+        case "poison":
+            return {
+                durationBonus: level >= 3 ? 40 : 0,
+                tickRateBonus: level >= 4 ? 6 : 0,
+                spreadOnHit: level >= 5 ? 1 : 0
+            };
+        case "lightning":
+            return {
+                shockSlowFactor: level >= 4 ? 0.82 : 1,
+                shockDuration: level >= 4 ? 45 + level * 6 : 0,
+                radiusBonus: level >= 5 ? TILE_SIZE * 0.12 : 0
+            };
+        case "slow":
+            return {
+                splashRadius: level >= 3 ? TILE_SIZE * (0.58 + level * 0.07) : 0,
+                primarySlowFactor: level >= 5 ? 0.18 : 0.28
+            };
+        default:
+            return {};
+    }
+}
+
+function handleEnemyDefeatState(enemy) {
+    if (!enemy || enemy.defeated) return;
+    enemy.defeated = true;
+
+    if (enemy.type === "megaBoss") {
+        for (let i = 0; i < 2; i++) {
+            const boss = getEnemy(enemy.path, "boss");
+            boss.x = enemy.x + Math.random() * 40 - 20;
+            boss.y = enemy.y + Math.random() * 40 - 20;
+            boss.pathIndex = enemy.pathIndex;
+            enemies.push(boss);
+        }
+    }
+
+    if (enemy.type === "splitter") {
+        splitQueue.push({
+            x: enemy.x,
+            y: enemy.y,
+            path: enemy.path,
+            pathIndex: enemy.pathIndex
+        });
+    }
+
+    gold += ENEMY_STATS[enemy.type].reward;
+    totalGoldEarned += ENEMY_STATS[enemy.type].reward;
+    handleEnemyKill(enemy.type);
+    enemyKillCount++;
+
+    if (totalGoldEarned >= 500) unlockAchievement("gold_500", "Earned 500 Gold");
+    if (enemyKillCount >= 100) unlockAchievement("kill_100", "100 Enemies Defeated");
+}
+
+function applyDamageToEnemy(enemy, amount, sourceType = "basic", level = 1, sourceTower = null) {
+    if (!enemy || enemy.defeated || amount <= 0) return 0;
+
+    let remainingDamage = amount;
+    let healthDamage = 0;
+
+    if (enemy.shield > 0) {
+        let shieldMultiplier = 1;
+        if (sourceType === "sniper") shieldMultiplier = 1.9;
+        else if (sourceType === "splash") shieldMultiplier = 1.5;
+        else if (sourceType === "lightning") shieldMultiplier = 1.25;
+
+        const shieldDamage = remainingDamage * shieldMultiplier;
+        enemy.shield -= shieldDamage;
+
+        if (enemy.shield >= 0) {
+            return 0;
+        }
+
+        remainingDamage = Math.abs(enemy.shield) / shieldMultiplier;
+        enemy.shield = 0;
+    }
+
+    const enemyResistances = ENEMY_STATS[enemy.type]?.resistances || {};
+    if (enemyResistances[sourceType]) {
+        remainingDamage *= enemyResistances[sourceType];
+    }
+
+    const bulwarkReduction = enemies.reduce((reduction, other) => {
+        if (other === enemy || other.defeated || other.type !== "bulwark") return reduction;
+        const auraRange = TILE_SIZE * (ENEMY_STATS.bulwark.auraRange || 2.3);
+        const distToBulwark = Math.hypot(enemy.x - other.x, enemy.y - other.y);
+        if (distToBulwark <= auraRange) {
+            return Math.max(reduction, ENEMY_STATS.bulwark.damageReduction || 0);
+        }
+        return reduction;
+    }, 0);
+
+    if (bulwarkReduction > 0) {
+        remainingDamage *= (1 - bulwarkReduction);
+    }
+
+    healthDamage = Math.min(enemy.health, remainingDamage);
+    enemy.health -= remainingDamage;
+    if (sourceTower?.stats && healthDamage > 0) {
+        sourceTower.stats.damageDealt += healthDamage;
+    }
+    if (enemy.health <= 0) {
+        handleEnemyDefeatState(enemy);
+        if (sourceTower?.stats) {
+            sourceTower.stats.kills++;
+        }
+    }
+    return remainingDamage;
+}
+
+function applySlowEffect(enemy, slowFactor, duration, source = "slow") {
+    if (!enemy || enemy.defeated) return;
+    enemy.statusEffects.push({
+        type: "slow",
+        slowFactor,
+        duration,
+        source
+    });
+}
+
+function recordLeakEvent(enemy) {
+    const livesLost = ENEMY_STATS[enemy.type].livesLost || 1;
+    leakEvents.push({
+        type: enemy.type,
+        livesLost,
+        wave,
+        at: Date.now()
+    });
+
+    const flashRadius = TILE_SIZE * 0.7;
+    leakFlashEffects.push({
+        x: enemy.x,
+        y: enemy.y,
+        radius: flashRadius,
+        color: "rgba(255,80,80,0.9)",
+        lifetime: 28,
+        maxLifetime: 28
+    });
+
+    addFloatingMessage(`-${livesLost}❤ ${enemy.type} leaked`, enemy.x, enemy.y - 12, "#ff7b7b");
+}
+
+function getLeakSummaryLines() {
+    if (leakEvents.length === 0) {
+        return ["No leaks recorded."];
+    }
+
+    const grouped = {};
+    leakEvents.forEach(event => {
+        grouped[event.type] = grouped[event.type] || { count: 0, livesLost: 0 };
+        grouped[event.type].count++;
+        grouped[event.type].livesLost += event.livesLost;
+    });
+
+    return Object.entries(grouped)
+        .sort((a, b) => b[1].livesLost - a[1].livesLost)
+        .slice(0, 3)
+        .map(([type, info]) => `${type}: ${info.count} leaks, ${info.livesLost} lives lost`);
+}
+
+function getTopTowerSummary() {
+    if (towers.length === 0) return "No towers deployed";
+
+    const topTower = towers
+        .slice()
+        .sort((a, b) => {
+            const damageDiff = (b.stats?.damageDealt || 0) - (a.stats?.damageDealt || 0);
+            if (damageDiff !== 0) return damageDiff;
+            return (b.stats?.kills || 0) - (a.stats?.kills || 0);
+        })[0];
+
+    if (!topTower || !topTower.stats) return "No tower data";
+    return `${topTower.type} Lv${topTower.level} | ${Math.round(topTower.stats.damageDealt)} dmg | ${topTower.stats.kills} kills`;
+}
+
+function buildGameOverSummary() {
+    const leakLines = getLeakSummaryLines();
+    const summary = [
+        `Wave reached: ${Math.min(wave, waves.length)} / ${waves.length}`,
+        `Gold earned: $${totalGoldEarned}`,
+        `Enemies defeated: ${enemyKillCount}`,
+        `Top tower: ${getTopTowerSummary()}`,
+        "",
+        "Biggest leaks:",
+        ...leakLines
+    ];
+    return summary;
+}
 
 // Preload Tile Images
 const tileImages = {
@@ -548,10 +1114,11 @@ function renderTowerButtons() {
   const start = currentPage * towersPerPage;
   const visibleTowers = towerTypes.slice(start, start + towersPerPage);
 
-  visibleTowers.forEach(type => {
-    const btn = document.createElement("button");
-    btn.className = "tower-button";
-    btn.dataset.type = type;
+    visibleTowers.forEach(type => {
+        const btn = document.createElement("button");
+        btn.className = "tower-button";
+        btn.dataset.type = type;
+        btn.title = towerInfo[type].name;
 
     const img = document.createElement("img");
     img.src = towerInfo[type].image;
@@ -565,16 +1132,22 @@ function renderTowerButtons() {
 
     btn.onclick = () => {
       if (!DEV_MODE && playerRank < towerUnlocks[type]) {
-        addFloatingMessage(`🔒 Unlocks at Rank ${towerUnlocks[type]}`, canvas.width / 2, 80, "orange");
+        addFloatingMessage(`🔒 Unlocks at Rank ${towerUnlocks[type]}`, canvas.width / 2, 80, "orange", true);
+        selectedTower = null;
+        selectedTowerType = type;
+        updateTowerButtons();
+        showTowerTypeDrawer(type);
         return;
       }
+      selectedTower = null;
       selectedTowerType = selectedTowerType === type ? null : type;
       updateTowerButtons();
+      if (selectedTowerType) {
+        showTowerTypeDrawer(type);
+      } else {
+        hideTowerActionUI();
+      }
     };
-
-    btn.addEventListener("mouseenter", e => showTooltip(e, type));
-    btn.addEventListener("mousemove", e => positionTooltip(e));
-    btn.addEventListener("mouseleave", () => tooltip.style.display = "none");
 
     container.appendChild(btn);
   });
@@ -605,17 +1178,25 @@ document.getElementById("nextPageBtn").onclick = () => {
 const ENEMY_IMAGES = {
     basic: new Image(),
     fast: new Image(),
+    rusher: null,
     tank: new Image(),
+    bruiser: null,
+    shield: null,
+    resistant: null,
+    commander: null,
+    bulwark: null,
     splitter: new Image(),
     mini: new Image(),
     stealth: new Image(),
     healer: new Image(),
     boss: new Image(),
-    megaboss: new Image()
+    megaBoss: new Image()
 };
 
 for (let key in ENEMY_IMAGES) {
-    ENEMY_IMAGES[key].src = `images/enemies/${key}.png`;
+    if (ENEMY_IMAGES[key]) {
+        ENEMY_IMAGES[key].src = `images/enemies/${key}.png`;
+    }
 }
 
 // Bullets
@@ -668,43 +1249,226 @@ function queuePoisonSound() {
   }
 }
 
-const tooltip = document.getElementById("towerTooltip");
+const towerDrawer = document.getElementById("towerDrawer");
+const towerDrawerTitle = document.getElementById("towerDrawerTitle");
+const towerDrawerMeta = document.getElementById("towerDrawerMeta");
+const towerDrawerStats = document.getElementById("towerDrawerStats");
+const towerDrawerPerks = document.getElementById("towerDrawerPerks");
+const towerDrawerNext = document.getElementById("towerDrawerNext");
+const towerDrawerUpgradeBtn = document.getElementById("towerDrawerUpgradeBtn");
+const towerDrawerSellBtn = document.getElementById("towerDrawerSellBtn");
 
-function showTooltip(e, type) {
-  const info = towerInfo[type];
-  if (!info) return;
-
-  let html = `<strong style="font-size:12px">${info.name}</strong><br>`;
-  html += `Cost: $${info.cost}<br>`;
-  html += `Unlocks at Rank: ${info.unlock}<br>`;
-  html += `<em>${info.description}</em><br><br>`;
-  html += `<u>Upgrades:</u><ul style="padding-left:12px;">`;
-  info.upgrades.forEach(up => html += `<li>${up}</li>`);
-  html += `</ul>`;
-
-  tooltip.innerHTML = html;
-  tooltip.style.display = "block";
-
-  positionTooltip(e);
+function getTowerSellValue(tower) {
+    const baseCost = towerCosts[tower.type] || 50;
+    let totalCostInvested = baseCost;
+    for (let level = 1; level < tower.level; level++) {
+        totalCostInvested += towerUpgradeCost({ type: tower.type, level });
+    }
+    return Math.floor(totalCostInvested * 0.55);
 }
 
-function positionTooltip(e) {
-  tooltip.style.left = `${e.pageX - tooltip.offsetWidth / 2}px`;
-  tooltip.style.top = `${e.pageY - tooltip.offsetHeight - 12}px`;
+function getTowerPerkSummary(type, level) {
+    const perks = [];
+    const next = [];
 
-  // Clamp to screen edges
-  if (parseInt(tooltip.style.left) < 4) tooltip.style.left = "4px";
-  const screenWidth = window.innerWidth;
-  if (parseInt(tooltip.style.left) + tooltip.offsetWidth > screenWidth - 4) {
-    tooltip.style.left = `${screenWidth - tooltip.offsetWidth - 4}px`;
-  }
-  if (parseInt(tooltip.style.top) < 0) tooltip.style.top = "4px";
+    switch (type) {
+        case "basic":
+            perks.push("All-rounder");
+            if (level >= 2) perks.push("Stealth Sight");
+            if (level >= 3) perks.push("Fast Cadence");
+            if (level >= 4) perks.push("Execute");
+            if (level >= 5) perks.push("Heavy Cleanup");
+            if (level < 2) next.push("Stealth Sight");
+            else if (level < 3) next.push("Fast Cadence");
+            else if (level < 4) next.push("Execute");
+            else if (level < 5) next.push("Heavy Cleanup");
+            break;
+        case "spread":
+            perks.push("Anti-swarm");
+            if (level >= 2) perks.push("Extra Pellets");
+            if (level >= 3) perks.push("Longer Reach");
+            if (level >= 4) perks.push("Wide Cone");
+            if (level >= 5) perks.push("Pierce");
+            if (level < 2) next.push("Extra Pellets");
+            else if (level < 3) next.push("Longer Reach");
+            else if (level < 4) next.push("Wide Cone");
+            else if (level < 5) next.push("Pierce");
+            break;
+        case "sniper":
+            perks.push("Priority Fire");
+            if (level >= 2) perks.push("Stealth Sight");
+            if (level >= 3) perks.push("Second Pierce");
+            if (level >= 4) perks.push("Kill Reload");
+            if (level >= 5) perks.push("Boss Hunter");
+            if (level < 2) next.push("Stealth Sight");
+            else if (level < 3) next.push("Second Pierce");
+            else if (level < 4) next.push("Kill Reload");
+            else if (level < 5) next.push("Boss Hunter");
+            break;
+        case "splash":
+            perks.push("Area Damage");
+            if (level >= 2) perks.push("Larger Blast");
+            if (level >= 3) perks.push("Pack Punish");
+            if (level >= 4) perks.push("Concussive Slow");
+            if (level >= 5) perks.push("Big Radius");
+            if (level < 2) next.push("Larger Blast");
+            else if (level < 3) next.push("Pack Punish");
+            else if (level < 4) next.push("Concussive Slow");
+            else if (level < 5) next.push("Big Radius");
+            break;
+        case "poison":
+            perks.push("Tank Attrition");
+            if (level >= 2) perks.push("Stealth Sight");
+            if (level >= 3) perks.push("Long Venom");
+            if (level >= 4) perks.push("Fast Ticks");
+            if (level >= 5) perks.push("Venom Spread");
+            if (level < 2) next.push("Stealth Sight");
+            else if (level < 3) next.push("Long Venom");
+            else if (level < 4) next.push("Fast Ticks");
+            else if (level < 5) next.push("Venom Spread");
+            break;
+        case "lightning":
+            perks.push("Chain Control");
+            if (level >= 2) perks.push("Longer Chain");
+            if (level >= 3) perks.push("Pack Damage");
+            if (level >= 4) perks.push("Shock Slow");
+            if (level >= 5) perks.push("Arc Radius");
+            if (level < 2) next.push("Longer Chain");
+            else if (level < 3) next.push("Pack Damage");
+            else if (level < 4) next.push("Shock Slow");
+            else if (level < 5) next.push("Arc Radius");
+            break;
+        case "slow":
+            perks.push("Support");
+            if (level >= 2) perks.push("Stealth Sight");
+            if (level >= 3) perks.push("Slow Pulse");
+            if (level >= 4) perks.push("Wider Aura");
+            if (level >= 5) perks.push("Cripple");
+            if (level < 2) next.push("Stealth Sight");
+            else if (level < 3) next.push("Slow Pulse");
+            else if (level < 4) next.push("Wider Aura");
+            else if (level < 5) next.push("Cripple");
+            break;
+    }
+
+    return { active: perks, next };
+}
+
+function renderTowerDrawerPerks(activePerks = [], nextPerks = []) {
+    if (!towerDrawerPerks) return;
+    towerDrawerPerks.innerHTML = "";
+
+    activePerks.forEach(label => {
+        const chip = document.createElement("span");
+        chip.className = "tower-drawer__perk";
+        chip.textContent = label;
+        towerDrawerPerks.appendChild(chip);
+    });
+
+    nextPerks.forEach(label => {
+        const chip = document.createElement("span");
+        chip.className = "tower-drawer__perk tower-drawer__perk--next";
+        chip.textContent = `Next: ${label}`;
+        towerDrawerPerks.appendChild(chip);
+    });
+}
+
+function updateTowerDrawer() {
+    if (!towerDrawer) return;
+
+    if (!towerDrawerState) {
+        towerDrawer.classList.remove("is-open");
+        towerDrawer.setAttribute("aria-hidden", "true");
+        return;
+    }
+
+    if (towerDrawerState.kind === "tower") {
+        const tower = towerDrawerState.tower;
+        const info = towerInfo[tower.type];
+        const upgradeCost = towerUpgradeCost(tower);
+        const nextUpgrade = tower.level >= 5 ? "Max level reached." : (info.upgrades[tower.level - 1] || "Upgrade available.");
+        const sellValue = getTowerSellValue(tower);
+        const perkSummary = getTowerPerkSummary(tower.type, tower.level);
+
+        towerDrawerTitle.textContent = `${info.name} Lv${tower.level}`;
+        towerDrawerMeta.textContent = `${info.role} | Weakness: ${info.weakness}`;
+        towerDrawerStats.textContent = `Range ${Math.round(tower.range / TILE_SIZE * 10) / 10} | Kills ${tower.stats.kills} | Damage ${Math.round(tower.stats.damageDealt)}`;
+        renderTowerDrawerPerks(perkSummary.active, tower.level >= 5 ? [] : perkSummary.next.slice(0, 1));
+        towerDrawerNext.textContent = `Next: ${nextUpgrade}`;
+
+        towerDrawerUpgradeBtn.textContent = tower.level >= 5 ? `Max Level (${tower.level})` : `Upgrade ($${upgradeCost})`;
+        towerDrawerUpgradeBtn.disabled = tower.level >= 5;
+        towerDrawerUpgradeBtn.onclick = () => {
+            if (tower.level >= 5) return;
+            if (gold >= upgradeCost) {
+                tower.upgrade();
+                gold -= upgradeCost;
+                updateTowerDrawer();
+                updateHUD();
+            } else {
+                addFloatingMessage("Not enough gold!", tower.x, tower.y, "red");
+            }
+        };
+
+        towerDrawerSellBtn.textContent = `Sell (+$${sellValue})`;
+        towerDrawerSellBtn.disabled = false;
+        towerDrawerSellBtn.onclick = () => {
+            gold += sellValue;
+            towers = towers.filter(t => t !== tower);
+            selectedTower = null;
+            hideTowerActionUI();
+            updateHUD();
+        };
+    } else if (towerDrawerState.kind === "type") {
+        const type = towerDrawerState.type;
+        const info = towerInfo[type];
+        const unlockRank = towerUnlocks[type];
+        const isUnlocked = DEV_MODE || playerRank >= unlockRank;
+        const firstUpgrade = info.upgrades[0] || "Upgrade available.";
+        const perkSummary = getTowerPerkSummary(type, 1);
+
+        towerDrawerTitle.textContent = `${info.name} $${info.cost}`;
+        towerDrawerMeta.textContent = `${info.role} | Weakness: ${info.weakness}`;
+        towerDrawerStats.textContent = isUnlocked
+            ? info.description
+            : `Unlocks at Rank ${unlockRank}. Current Rank ${playerRank}.`;
+        renderTowerDrawerPerks(perkSummary.active, perkSummary.next.slice(0, 2));
+        towerDrawerNext.textContent = `Upgrades start: ${firstUpgrade}`;
+
+        towerDrawerUpgradeBtn.textContent = isUnlocked ? `Ready: Tap Map ($${info.cost})` : `Locked Until Rank ${unlockRank}`;
+        towerDrawerUpgradeBtn.disabled = !isUnlocked;
+        towerDrawerUpgradeBtn.onclick = () => {};
+
+        towerDrawerSellBtn.textContent = "Cancel";
+        towerDrawerSellBtn.disabled = false;
+        towerDrawerSellBtn.onclick = () => {
+            selectedTowerType = null;
+            updateTowerButtons();
+            hideTowerActionUI();
+        };
+    }
+
+    towerDrawer.classList.add("is-open");
+    towerDrawer.setAttribute("aria-hidden", "false");
+}
+
+function showTowerTypeDrawer(type) {
+    towerDrawerState = { kind: "type", type };
+    updateTowerDrawer();
 }
 
 
 updateTowerButtons();
 
 document.getElementById("startWaveBtn").onclick = () => {
+    const rushBonus = calculateRushBonus();
+    if (rushBonus > 0) {
+        gold += rushBonus;
+        addFloatingMessage(`Quick Deploy +$${rushBonus}`, canvas.width / 2, 82, "#7ce8ff", true);
+    }
+    currentWaveStartLives = lives;
+    waveReadyAt = 0;
+    pendingRushBonus = 0;
     startNextWave();
     document.getElementById("startWaveBtn").style.display = "none";
 };
@@ -739,7 +1503,7 @@ function preallocateAllBulletTypes(basic = 300, special = 300) {
 
 // Get a bullet from the pool or create a new one
 function getBullet(x, y, target, level, angle = null, type = "basic") {
-    const bullet = bulletPool.pop() || new Bullet(x, y, target, level, type);
+    const bullet = bulletPool.pop() || new Bullet(x, y, target, level, angle, type);
     bullet.reset(x, y, target, level, angle, type);
     return bullet;
 }
@@ -772,8 +1536,10 @@ function releasePoisonBullet(bullet) {
 function getSpreadBullet(x, y, level, angle, type = "spread") {
     const bullet = spreadBulletPool.pop() || new Bullet(x, y, null, level, angle, type);
     bullet.reset(x, y, null, level, angle, type);
+    const specials = getTowerSpecials(type, level);
     bullet.speed = 4; // 🔹 Make spread slower
-    bullet.maxDistance = TILE_SIZE * 3;
+    bullet.maxDistance = specials.maxDistance || TILE_SIZE * 3;
+    bullet.pierceRemaining = specials.pierce || 0;
     return bullet;
 }
 
@@ -828,6 +1594,27 @@ function calculateTileSize() {
     TILE_SIZE = Math.floor(Math.min(tileW, tileH));
 }
 
+function updateMapOffsets() {
+    if (!Array.isArray(currentMap) || !currentMap.length || !Array.isArray(currentMap[0])) {
+        mapOffsetX = 0;
+        mapOffsetY = 0;
+        return;
+    }
+
+    const mapWidth = currentMap[0].length * TILE_SIZE;
+    const mapHeight = currentMap.length * TILE_SIZE;
+    mapOffsetX = Math.floor((canvas.width - mapWidth) / 2);
+    mapOffsetY = Math.floor((canvas.height - mapHeight) / 2);
+}
+
+function isInsideMap(x, y) {
+    if (!Array.isArray(currentMap) || !currentMap.length || !Array.isArray(currentMap[0])) return false;
+
+    const mapWidth = currentMap[0].length * TILE_SIZE;
+    const mapHeight = currentMap.length * TILE_SIZE;
+    return x >= 0 && y >= 0 && x < mapWidth && y < mapHeight;
+}
+
 function resizeCanvas() {
     const hud = document.getElementById("hudBar");
     const panel = document.getElementById("towerPanel");
@@ -838,6 +1625,7 @@ function resizeCanvas() {
     canvas.height = window.innerHeight - hudHeight - panelHeight;
 
     calculateTileSize();
+    updateMapOffsets();
 }
 
 window.addEventListener('resize', resizeCanvas);
@@ -849,17 +1637,42 @@ class Tower {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.range = TILE_SIZE * (type === "sniper" ? 4 : 1.5);
+        this.id = towerIdCounter++;
         this.cooldown = 0;
         this.level = 1;
         this.angle = 0; // 🆕 Track facing direction
+        this.stats = {
+            damageDealt: 0,
+            kills: 0
+        };
+        this.refreshStats();
+    }
+
+    refreshStats() {
+        this.range = getTowerRange(this.type, this.level);
+        this.fireCooldown = getTowerCooldown(this.type, this.level);
+        this.specials = getTowerSpecials(this.type, this.level);
     }
 
     upgrade() {
         if (this.level < 5) {
             this.level++;
-            this.range += 10;
+            this.refreshStats();
         }
+    }
+
+    getPackPressureTarget(enemies, inRange, radius) {
+        let best = null;
+        let bestScore = -1;
+        for (const enemy of enemies) {
+            if (!inRange(enemy)) continue;
+            const nearby = enemies.filter(other => inRange(other) && Math.hypot(enemy.x - other.x, enemy.y - other.y) <= radius).length;
+            if (nearby > bestScore || (nearby === bestScore && (!best || enemy.pathIndex > best.pathIndex))) {
+                best = enemy;
+                bestScore = nearby;
+            }
+        }
+        return best;
     }
 
     update(enemies, bullets, delta = 1) {
@@ -876,17 +1689,20 @@ class Tower {
         let didFire = false;
 
         if (this.type === "poison") {
-            const target = enemies.find(inRange);
+            const target = enemies
+                .filter(inRange)
+                .sort((a, b) => (b.maxHealth - a.maxHealth) || (b.pathIndex - a.pathIndex))[0];
             if (target) {
                 bullets.push(getPoisonBullet(this.x, this.y, target, this.level, this.type));
+                bullets[bullets.length - 1].sourceTower = this;
                 queuePoisonSound?.();
-                this.cooldown = 50;
+                this.cooldown = this.fireCooldown;
                 didFire = true;
             }
         } else if (this.type === "sniper") {
             let best = null;
             for (const e of enemies) {
-                if (inRange(e) && (!best || e.pathIndex > best.pathIndex)) {
+                if (inRange(e) && (!best || e.pathIndex > best.pathIndex || (e.pathIndex === best.pathIndex && e.maxHealth > best.maxHealth))) {
                     best = e;
                 }
             }
@@ -900,61 +1716,76 @@ class Tower {
                 const tipX = this.x + Math.cos(this.angle - Math.PI / 2) * barrelLength;
                 const tipY = this.y + Math.sin(this.angle - Math.PI / 2) * barrelLength;
 
-                bullets.push(getBullet(tipX, tipY, target, this.level, this.type));
+                const bullet = getBullet(tipX, tipY, target, this.level, null, this.type);
+                bullet.sourceTower = this;
+                bullets.push(bullet);
                 queueHitSound();
-                this.cooldown = 70;
+                this.cooldown = this.fireCooldown;
                 didFire = true;
             }
         } else if (this.type === "splash") {
-            const target = enemies.find(inRange);
+            const target = this.getPackPressureTarget(enemies, inRange, TILE_SIZE * (1.1 + this.level * 0.05));
             if (target) {
-                bullets.push(getSplashBullet(this.x, this.y, target, this.level, this.type, this.type));
+                const bullet = getSplashBullet(this.x, this.y, target, this.level, this.type);
+                bullet.sourceTower = this;
+                bullets.push(bullet);
                 queueHitSound();
-                this.cooldown = 40;
+                this.cooldown = this.fireCooldown;
                 didFire = true;
             }
         } else if (this.type === "basic") {
-            const target = enemies.find(inRange);
+            const target = enemies
+                .filter(inRange)
+                .sort((a, b) => b.pathIndex - a.pathIndex)[0];
             if (target) {
-                const b = getBullet(this.x, this.y, target, this.level, this.type);
-                b.angle = null;
+                const b = getBullet(this.x, this.y, target, this.level, null, this.type);
+                b.sourceTower = this;
                 bullets.push(b);
                 queueHitSound();
-                this.cooldown = 30;
+                this.cooldown = this.fireCooldown;
                 didFire = true;
             }
         } else if (this.type === "spread") {
-            const target = enemies.find(inRange);
+            const target = this.getPackPressureTarget(enemies, inRange, TILE_SIZE * 1.15);
             if (target) {
                 const angleToTarget = Math.atan2(target.y - this.y, target.x - this.x);
-                const spread = Math.PI / 3;
-                const numBullets = 2 + this.level;
+                const spread = this.specials.coneWidth;
+                const numBullets = this.specials.pelletCount;
 
                 for (let i = 0; i < numBullets; i++) {
                     const offset = (-spread / 2) + (spread * i) / (numBullets - 1);
                     const angle = angleToTarget + offset;
                     const bullet = getSpreadBullet(this.x, this.y, this.level, angle, this.type);
+                    bullet.sourceTower = this;
+                    bullet.pierceRemaining = this.specials.pierce;
+                    bullet.maxDistance = this.specials.maxDistance;
                     bullets.push(bullet);
                 }
 
                 queueHitSound();
-                this.cooldown = 45;
+                this.cooldown = this.fireCooldown;
                 didFire = true;
             }
         } else if (this.type === "lightning") {
-              const target = enemies.find(inRange);
+              const target = this.getPackPressureTarget(enemies, inRange, TILE_SIZE * (1.4 + this.level * 0.08));
               if (target) {
-                bullets.push(getLightningBullet(this.x, this.y, target, this.level, this.type));
+                const bullet = getLightningBullet(this.x, this.y, target, this.level, this.type);
+                bullet.sourceTower = this;
+                bullets.push(bullet);
                 queueHitSound?.();
-                this.cooldown = 45;
+                this.cooldown = this.fireCooldown;
                 didFire = true;
               }
         }else if (this.type === "slow") {
-          const target = enemies.find(inRange);
+          const target = enemies
+            .filter(inRange)
+            .sort((a, b) => ENEMY_STATS[b.type].speed - ENEMY_STATS[a.type].speed || b.pathIndex - a.pathIndex)[0];
           if (target) {
-            bullets.push(getSlowBullet(this.x, this.y, target, this.level, this.type));
+            const bullet = getSlowBullet(this.x, this.y, target, this.level, this.type);
+            bullet.sourceTower = this;
+            bullets.push(bullet);
             queueHitSound?.();
-            this.cooldown = 50;
+            this.cooldown = this.fireCooldown;
             didFire = true;
           }
         }
@@ -1064,6 +1895,8 @@ class Bullet {
         this.hit = false; // ✅ ONLY reset here
         this.traveled = 0;
         this.maxDistance = TILE_SIZE * 6;
+        this.pierceRemaining = 0;
+        this.sourceTower = null;
     }
 
     update(delta = 1) {
@@ -1081,9 +1914,35 @@ class Bullet {
             const moveDist = this.speed * delta;
 
             if (dist < moveDist) {
-                this.target.health -= this.damage;
+                let damage = getAdjustedTowerDamage(this.damage, this.type, this.target, this.level);
+                const specials = getTowerSpecials(this.type, this.level);
+                if (this.type === "basic" && specials.executeThreshold > 0 && this.target.health / this.target.maxHealth <= specials.executeThreshold) {
+                    damage = Math.round(damage * specials.executeBonus);
+                }
+                if (this.type === "sniper" && ["boss", "megaBoss", "tank", "shield"].includes(this.target.type)) {
+                    damage = Math.round(damage * specials.bossBonus);
+                }
+                applyDamageToEnemy(this.target, damage, this.type, this.level, this.sourceTower);
                 //spawnExplosion(this.target.x, this.target.y);
                 this.handleEnemyKill(this.target);
+
+                if (this.type === "sniper" && specials.pierceTargets > 0) {
+                    const nearbyTargets = enemies
+                        .filter(enemy => enemy !== this.target && !enemy.defeated && Math.hypot(enemy.x - this.target.x, enemy.y - this.target.y) <= TILE_SIZE * 0.9)
+                        .sort((a, b) => b.pathIndex - a.pathIndex)
+                        .slice(0, specials.pierceTargets);
+                    nearbyTargets.forEach(enemy => {
+                        const pierceDamage = Math.round(damage * 0.7);
+                        applyDamageToEnemy(enemy, pierceDamage, this.type, this.level, this.sourceTower);
+                        this.handleEnemyKill(enemy);
+                    });
+                }
+
+                if (this.type === "sniper" && this.target.defeated) {
+                    if (this.sourceTower) {
+                        this.sourceTower.cooldown *= specials.killReloadMultiplier;
+                    }
+                }
                 this.markForRelease();
             } else {
                 this.x += (dx / dist) * moveDist;
@@ -1102,11 +1961,15 @@ class Bullet {
 
                 const dist = Math.hypot(enemy.x - this.x, enemy.y - this.y);
                 if (dist < TILE_SIZE / 5) {
-                    enemy.health -= this.damage;
+                    applyDamageToEnemy(enemy, getAdjustedTowerDamage(this.damage, this.type, enemy, this.level), this.type, this.level, this.sourceTower);
                     //spawnExplosion(enemy.x, enemy.y);
                     this.handleEnemyKill(enemy);
-                    this.markForRelease();
-                    break;
+                    if (this.pierceRemaining > 0) {
+                        this.pierceRemaining--;
+                    } else {
+                        this.markForRelease();
+                        break;
+                    }
                 }
             }
 
@@ -1127,35 +1990,8 @@ class Bullet {
     }
 
     handleEnemyKill(enemy) {
-        if (enemy.health > 0) return;
-
-       if (enemy.type === "megaBoss") {
-            for (let i = 0; i < 2; i++) {
-                const boss = getEnemy(enemy.path, "boss");
-                boss.x = enemy.x + Math.random() * 40 - 20;
-                boss.y = enemy.y + Math.random() * 40 - 20;
-                boss.pathIndex = enemy.pathIndex;
-                enemies.push(boss);
-            }
-        }
-
-
-        gold += ENEMY_STATS[enemy.type].reward;
-        totalGoldEarned += ENEMY_STATS[enemy.type].reward;
-        handleEnemyKill(enemy.type);
-        enemyKillCount++;
-
-        if (enemy.type === "splitter") {
-            splitQueue.push({
-                x: enemy.x,
-                y: enemy.y,
-                path: enemy.path,
-                pathIndex: enemy.pathIndex
-            });
-        }
-
-        if (totalGoldEarned >= 500) unlockAchievement("gold_500", "Earned 500 Gold");
-        if (enemyKillCount >= 100) unlockAchievement("kill_100", "100 Enemies Defeated");
+        if (enemy.health > 0 && !enemy.defeated) return;
+        handleEnemyDefeatState(enemy);
     }
 
    draw() {
@@ -1189,9 +2025,10 @@ class SplashBullet {
         this.level = level;
         this.speed = 4 + level;
         this.type = type;
-        this.damage = Math.floor(15 + 6 * Math.sqrt(level - 1));
-        this.explosionRadius = TILE_SIZE * 1.2;
+        this.damage = Math.floor(22 + 5 * Math.sqrt(level));
+        this.explosionRadius = TILE_SIZE * (1.15 + level * 0.08) + getTowerSpecials(type, level).blastRadiusBonus;
         this.hit = false;
+        this.sourceTower = null;
     }
 
     update(delta = 1) {
@@ -1205,28 +2042,15 @@ class SplashBullet {
                 const d = Math.hypot(enemy.x - this.x, enemy.y - this.y);
                 if (d < this.explosionRadius) {
                     if (enemy.type === "stealth" && this.level < 2) continue;
-                    enemy.health -= this.damage;
+                    applyDamageToEnemy(enemy, getAdjustedTowerDamage(this.damage, this.type, enemy, this.level), this.type, this.level, this.sourceTower);
                     //spawnExplosion(enemy.x, enemy.y);
                     this.handleEnemyKill?.(enemy); // Safe in case reused
 
-                    if (enemy.health <= 0) {
-                        if (enemy.type === "splitter") {
-                            splitQueue.push({ x: enemy.x, y: enemy.y, path: enemy.path, pathIndex: enemy.pathIndex });
-                        }
-                        if (enemy.type === "megaBoss") {
-                            for (let i = 0; i < 2; i++) {
-                                const boss = getEnemy(enemy.path, "boss");
-                                boss.x = enemy.x + Math.random() * 40 - 20;
-                                boss.y = enemy.y + Math.random() * 40 - 20;
-                                boss.pathIndex = enemy.pathIndex;
-                                enemies.push(boss);
-                            }
-                        }
-
-                        gold += ENEMY_STATS[enemy.type].reward;
-                        totalGoldEarned += ENEMY_STATS[enemy.type].reward;
-                        enemyKillCount++;
+                    const specials = getTowerSpecials(this.type, this.level);
+                    if (specials.impactSlowDuration > 0) {
+                        applySlowEffect(enemy, specials.impactSlowFactor, specials.impactSlowDuration, "concussive");
                     }
+                    if (enemy.health <= 0 || enemy.defeated) this.handleEnemyKill?.(enemy);
                 }
             }
 
@@ -1270,7 +2094,8 @@ class PoisonBullet {
         this.hit = false;
         this.type = type;
         const info = towerInfo[this.type];
-        this.damage = Math.floor(info.baseDamage + info.damageScale * Math.sqrt(level - 1));
+        this.damage = Math.floor(info.baseDamage + info.damageScale * Math.sqrt(level));
+        this.sourceTower = null;
 
     }
 
@@ -1281,12 +2106,34 @@ class PoisonBullet {
         const moveDist = this.speed * delta;
 
         if (dist < moveDist) {
+            const poisonTick = getPoisonTickDamage(this.target, this.level);
+            const specials = getTowerSpecials(this.type, this.level);
             this.target.statusEffects.push({
                 type: "poison",
-                damage: this.damage,
-                tickRate: 30,
-                duration: 120
+                damage: poisonTick,
+                tickRate: Math.max(12, 30 - this.level * 2 - specials.tickRateBonus),
+                duration: 120 + this.level * 20 + specials.durationBonus,
+                sourceTower: this.sourceTower,
+                sourceType: this.type,
+                sourceLevel: this.level
             });
+
+            if (specials.spreadOnHit > 0) {
+                const secondaryTarget = enemies
+                    .filter(enemy => enemy !== this.target && !enemy.defeated && Math.hypot(enemy.x - this.target.x, enemy.y - this.target.y) <= TILE_SIZE * 1.25)
+                    .sort((a, b) => (b.maxHealth - a.maxHealth) || (b.pathIndex - a.pathIndex))[0];
+                if (secondaryTarget) {
+                    secondaryTarget.statusEffects.push({
+                        type: "poison",
+                        damage: Math.round(poisonTick * 0.7),
+                        tickRate: Math.max(14, 32 - this.level * 2),
+                        duration: 90 + this.level * 16,
+                        sourceTower: this.sourceTower,
+                        sourceType: this.type,
+                        sourceLevel: this.level
+                    });
+                }
+            }
 
             spawnExplosion(this.target.x, this.target.y, 4);
             this.hit = true;
@@ -1320,7 +2167,7 @@ class LightningBullet {
     this.reset(x, y, target, level, type);
   }
 
-  reset(x, y, target, level, type = "lightning") {
+    reset(x, y, target, level, type = "lightning") {
     this.x = x;
     this.y = y;
     this.target = target;
@@ -1328,9 +2175,10 @@ class LightningBullet {
     this.speed = 6;
     this.type = type;
     const info = towerInfo[this.type];
-    this.damage = Math.floor(info.baseDamage + info.damageScale * Math.sqrt(level - 1));
-    this.radius = TILE_SIZE * 1.5;
+    this.damage = Math.floor(info.baseDamage + info.damageScale * Math.sqrt(level));
+    this.radius = TILE_SIZE * (1.35 + level * 0.12) + getTowerSpecials(type, level).radiusBonus;
     this.hit = false;
+    this.sourceTower = null;
   }
 
   update(delta = 1) {
@@ -1342,16 +2190,16 @@ class LightningBullet {
       const step = this.speed * delta;
 
       if (dist < step) {
+        const specials = getTowerSpecials(this.type, this.level);
         for (let e of enemies) {
           const d = Math.hypot(e.x - this.target.x, e.y - this.target.y);
           if (d <= this.radius) {
-            e.health -= this.damage;
-            
-            if (e.health <= 0) {
-                gold += ENEMY_STATS[e.type].reward;
-                totalGoldEarned += ENEMY_STATS[e.type].reward;
-                enemyKillCount++;
+            applyDamageToEnemy(e, getAdjustedTowerDamage(this.damage, this.type, e, this.level), this.type, this.level, this.sourceTower);
+            if (specials.shockDuration > 0) {
+                applySlowEffect(e, specials.shockSlowFactor, specials.shockDuration, "shock");
             }
+            
+            if (e.health <= 0 || e.defeated) handleEnemyDefeatState(e);
           }
         }
 
@@ -1397,28 +2245,33 @@ class SlowBullet {
     const info = towerInfo[this.type];
     this.slowAmount = info.slowAmount + info.slowScale * level;
     this.duration = info.duration + info.durationScale * level;
+    this.sourceTower = null;
 
   }
 
-  update() {
+  update(delta = 1) {
     if (this.hit) return;
 
     const dx = this.target.x - this.x;
     const dy = this.target.y - this.y;
     const dist = Math.hypot(dx, dy);
 
-    if (dist < this.speed) {
-      this.target.statusEffects.push({
-        type: this.type,
-        multiplier: 1 - this.slowAmount,
-        duration: this.duration
-      });
-        releaseSlowBullet(this);
+    if (dist < this.speed * delta) {
+      const specials = getTowerSpecials(this.type, this.level);
+      applySlowEffect(this.target, specials.primarySlowFactor, this.duration, "slow");
+
+      if (specials.splashRadius > 0) {
+        enemies
+          .filter(enemy => enemy !== this.target && !enemy.defeated && Math.hypot(enemy.x - this.target.x, enemy.y - this.target.y) <= specials.splashRadius)
+          .forEach(enemy => applySlowEffect(enemy, Math.max(0.32, 1 - this.slowAmount * 0.65), Math.floor(this.duration * 0.7), "slow"));
+      }
+
+      releaseSlowBullet(this);
       //spawnExplosion(this.target.x, this.target.y, 2);
       this.hit = true;
     } else {
-      this.x += (dx / dist) * this.speed;
-      this.y += (dy / dist) * this.speed;
+      this.x += (dx / dist) * this.speed * delta;
+      this.y += (dy / dist) * this.speed * delta;
     }
   }
 
@@ -1461,15 +2314,20 @@ class Enemy {
         this.speed = ENEMY_STATS[type].speed;
         this.maxHealth = this.health;
         this.lastDrawnHp = this.health;
+        this.shield = ENEMY_STATS[type].shield || 0;
+        this.maxShield = this.shield;
+        this.defeated = false;
+        this.leaked = false;
         this.statusEffects = [];
         this.statusTimers = {};
     }
 
     update(delta = 1) {
+        if (this.defeated) return;
+
         // Check for leak
         if (this.pathIndex >= this.path.length - 1) {
-            lives -= ENEMY_STATS[this.type].livesLost || 1;
-            releaseEnemy(this);
+            this.leaked = true;
             return;
         }
 
@@ -1483,9 +2341,25 @@ class Enemy {
         let actualSpeed = this.speed;
 
         // Apply slow if active
-        const slowEffect = this.statusEffects.find(e => e.type === "slow");
+        const slowEffect = this.statusEffects
+            .filter(effect => effect.type === "slow")
+            .sort((a, b) => a.slowFactor - b.slowFactor)[0];
         if (slowEffect) {
             actualSpeed *= slowEffect.slowFactor || 0.5; // e.g. 50% slow
+        }
+
+        if (this.type !== "commander") {
+            const commanderBonus = enemies
+                .filter(other => other !== this && !other.defeated && other.type === "commander")
+                .reduce((bonus, commander) => {
+                    const auraRange = TILE_SIZE * (ENEMY_STATS.commander.auraRange || 2);
+                    const distToCommander = Math.hypot(this.x - commander.x, this.y - commander.y);
+                    if (distToCommander <= auraRange) {
+                        return bonus + (ENEMY_STATS.commander.auraBoost || 0.12);
+                    }
+                    return bonus;
+                }, 0);
+            actualSpeed *= Math.min(1.42, 1 + commanderBonus);
         }
 
         const moveDist = actualSpeed * delta;
@@ -1516,11 +2390,17 @@ class Enemy {
             if (effect.type === "poison") {
                 this.statusTimers[effect] = (this.statusTimers[effect] || 0) + delta;
                 while (this.statusTimers[effect] >= effect.tickRate) {
-                    this.health -= effect.damage;
+                    applyDamageToEnemy(
+                        this,
+                        effect.damage,
+                        effect.sourceType || "poison",
+                        effect.sourceLevel || 1,
+                        effect.sourceTower || null
+                    );
                     this.statusTimers[effect] -= effect.tickRate;
 
-                    if (this.health <= 0) {
-                        releaseEnemy(this);
+                    if (this.health <= 0 || this.defeated) {
+                        handleEnemyDefeatState(this);
                         return false;
                     }
                 }
@@ -1547,7 +2427,13 @@ class Enemy {
         const scaleMap = {
             basic: 0.55,
             fast: 0.5,
+            rusher: 0.45,
             tank: 0.65,
+            bruiser: 0.72,
+            shield: 0.58,
+            resistant: 0.58,
+            commander: 0.6,
+            bulwark: 0.62,
             splitter: 0.55,
             mini: 0.4,
             stealth: 0.5,
@@ -1561,12 +2447,26 @@ class Enemy {
 
         // Poison aura effect
         const isPoisoned = this.statusEffects.some(e => e.type === "poison");
+        const activeSlowEffects = this.statusEffects.filter(effect => effect.type === "slow");
+        const strongestSlow = activeSlowEffects.sort((a, b) => a.slowFactor - b.slowFactor)[0] || null;
+        const isShocked = activeSlowEffects.some(effect => effect.source === "shock");
         if (isPoisoned) {
             ctx.save();
             ctx.beginPath();
             ctx.arc(this.x, this.y, TILE_SIZE * 0.5 + Math.sin(Date.now() / 150) * 2, 0, Math.PI * 2);
             ctx.fillStyle = "rgba(0,255,0,0.15)";
             ctx.fill();
+            ctx.restore();
+        }
+
+        if (strongestSlow) {
+            ctx.save();
+            ctx.setLineDash(isShocked ? [5, 4] : [3, 4]);
+            ctx.strokeStyle = isShocked ? "rgba(118, 240, 255, 0.95)" : "rgba(133, 214, 255, 0.85)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size * 0.64, 0, Math.PI * 2);
+            ctx.stroke();
             ctx.restore();
         }
 
@@ -1578,7 +2478,13 @@ class Enemy {
             let color = "red";
             switch (this.type) {
                 case "fast":     color = "lime"; break;
+                case "rusher":   color = "#ff8844"; break;
                 case "tank":     color = "purple"; break;
+                case "bruiser":  color = "#7f3a1c"; break;
+                case "shield":   color = "#4488ff"; break;
+                case "resistant": color = "#c2ff63"; break;
+                case "commander": color = "#ff66aa"; break;
+                case "bulwark":  color = "#77c4ff"; break;
                 case "boss":     color = "black"; break;
                 case "splitter": color = "#aa5500"; break;
                 case "mini":     color = "#ffaa00"; break;
@@ -1592,6 +2498,37 @@ class Enemy {
             ctx.beginPath();
             ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
             ctx.fill();
+        }
+
+        if (this.maxShield > 0 && this.shield > 0) {
+            const shieldPct = Math.max(0, this.shield / this.maxShield);
+            ctx.save();
+            ctx.strokeStyle = "rgba(110,180,255,0.9)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size * 0.58, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * shieldPct);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        if (this.type === "commander") {
+            ctx.save();
+            ctx.strokeStyle = "rgba(255,102,170,0.3)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, TILE_SIZE * (ENEMY_STATS.commander.auraRange || 2), 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        if (this.type === "bulwark") {
+            ctx.save();
+            ctx.strokeStyle = "rgba(119,196,255,0.34)";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, TILE_SIZE * (ENEMY_STATS.bulwark.auraRange || 2.3), 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
         }
 
         // Health bar
@@ -1609,6 +2546,31 @@ class Enemy {
             ctx.fillStyle = "lime";
             ctx.fillRect(this.x - 12, this.y - 20, 24 * hpPct, 4);
         }
+
+        const statusBadges = [];
+        if (isPoisoned) {
+            statusBadges.push({ color: "#5cff84" });
+        }
+        if (strongestSlow) {
+            statusBadges.push({ color: isShocked ? "#79efff" : "#87cfff" });
+        }
+        if (this.maxShield > 0 && this.shield > 0) {
+            statusBadges.push({ color: "#6aa7ff" });
+        }
+
+        statusBadges.forEach((badge, index) => {
+            const badgeX = this.x - ((statusBadges.length - 1) * 5) + index * 10;
+            const badgeY = this.y - size * 0.7 - 8;
+            ctx.save();
+            ctx.fillStyle = badge.color;
+            ctx.beginPath();
+            ctx.arc(badgeX, badgeY, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = "rgba(8, 12, 16, 0.85)";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.restore();
+        });
     }
 
 
@@ -1646,6 +2608,129 @@ function findPath(map) {
     }));
 }
 
+function isPathTile(tileType) {
+    return ["P", "C", "S", "E", "T"].includes(tileType) || /^P\d+$/.test(tileType || "");
+}
+
+function getTileAtWorldPosition(x, y) {
+    const tileX = Math.floor(x / TILE_SIZE);
+    const tileY = Math.floor(y / TILE_SIZE);
+    const tileType = currentMap?.[tileY]?.[tileX];
+    return {
+        tileX,
+        tileY,
+        tileType,
+        inside: Number.isInteger(tileX) && Number.isInteger(tileY) && !!tileType
+    };
+}
+
+function isTileOccupied(tileX, tileY) {
+    return towers.some(tower =>
+        Math.floor(tower.x / TILE_SIZE) === tileX &&
+        Math.floor(tower.y / TILE_SIZE) === tileY
+    );
+}
+
+function canBuildOnTile(tileX, tileY) {
+    const tileType = currentMap?.[tileY]?.[tileX];
+    if (!tileType) return false;
+    if (isPathTile(tileType)) return false;
+    if (isTileOccupied(tileX, tileY)) return false;
+    return true;
+}
+
+function drawPathGuides() {
+    if (!enemyPath || enemyPath.length < 2) return;
+
+    ctx.save();
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    ctx.strokeStyle = "rgba(25, 16, 7, 0.26)";
+    ctx.lineWidth = TILE_SIZE * 0.58;
+    ctx.beginPath();
+    ctx.moveTo(enemyPath[0].x, enemyPath[0].y);
+    for (let i = 1; i < enemyPath.length; i++) {
+        ctx.lineTo(enemyPath[i].x, enemyPath[i].y);
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(255, 230, 166, 0.24)";
+    ctx.lineWidth = Math.max(3, TILE_SIZE * 0.18);
+    ctx.beginPath();
+    ctx.moveTo(enemyPath[0].x, enemyPath[0].y);
+    for (let i = 1; i < enemyPath.length; i++) {
+        ctx.lineTo(enemyPath[i].x, enemyPath[i].y);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(255, 229, 145, 0.55)";
+    enemyPath.forEach((point, index) => {
+        if (index === 0 || index === enemyPath.length - 1 || index % 5 === 0) {
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, Math.max(2, TILE_SIZE * 0.07), 0, Math.PI * 2);
+            ctx.fill();
+        }
+    });
+    ctx.restore();
+}
+
+function drawPlacementOverlay() {
+    if (!selectedTowerType || !hoveredBuildTile?.inside) return;
+
+    const { tileX, tileY } = hoveredBuildTile;
+    const centerX = tileX * TILE_SIZE + TILE_SIZE / 2;
+    const centerY = tileY * TILE_SIZE + TILE_SIZE / 2;
+    const buildable = canBuildOnTile(tileX, tileY);
+    const range = getTowerRange(selectedTowerType, 1);
+
+    ctx.save();
+    ctx.fillStyle = buildable ? "rgba(74, 233, 155, 0.20)" : "rgba(255, 92, 92, 0.22)";
+    ctx.strokeStyle = buildable ? "rgba(130, 255, 197, 0.92)" : "rgba(255, 156, 156, 0.95)";
+    ctx.lineWidth = 2;
+    ctx.fillRect(tileX * TILE_SIZE, tileY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    ctx.strokeRect(tileX * TILE_SIZE + 1, tileY * TILE_SIZE + 1, TILE_SIZE - 2, TILE_SIZE - 2);
+
+    if (!buildable) {
+        ctx.beginPath();
+        ctx.moveTo(tileX * TILE_SIZE + 4, tileY * TILE_SIZE + 4);
+        ctx.lineTo((tileX + 1) * TILE_SIZE - 4, (tileY + 1) * TILE_SIZE - 4);
+        ctx.moveTo((tileX + 1) * TILE_SIZE - 4, tileY * TILE_SIZE + 4);
+        ctx.lineTo(tileX * TILE_SIZE + 4, (tileY + 1) * TILE_SIZE - 4);
+        ctx.stroke();
+    }
+
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, range, 0, Math.PI * 2);
+    ctx.fillStyle = buildable ? "rgba(104, 210, 255, 0.10)" : "rgba(255, 124, 124, 0.08)";
+    ctx.fill();
+    ctx.strokeStyle = buildable ? "rgba(120, 214, 255, 0.65)" : "rgba(255, 128, 128, 0.45)";
+    ctx.setLineDash([7, 5]);
+    ctx.stroke();
+    ctx.restore();
+}
+
+function drawSelectedTowerOverlay() {
+    if (!selectedTower) return;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(selectedTower.x, selectedTower.y, selectedTower.range, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(122, 198, 255, 0.10)";
+    ctx.fill();
+    ctx.setLineDash([8, 6]);
+    ctx.strokeStyle = "rgba(155, 223, 255, 0.88)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.beginPath();
+    ctx.arc(selectedTower.x, selectedTower.y, TILE_SIZE * 0.16, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 241, 170, 0.92)";
+    ctx.fill();
+    ctx.restore();
+}
+
 function drawMap() {
     for (let y = 0; y < currentMap.length; y++) {
         for (let x = 0; x < currentMap[y].length; x++) {
@@ -1663,11 +2748,17 @@ function drawMap() {
             }
         }
     }
+
+    drawPathGuides();
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(mapOffsetX, mapOffsetY);
     drawMap();
+    drawPlacementOverlay();
+    drawSelectedTowerOverlay();
 
     towers.forEach(t => t.draw());
     enemies.forEach(e => e.draw(ctx));
@@ -1680,9 +2771,41 @@ function draw() {
       }
     });
 
-
-    // Floating messages
     floatingMessages.forEach(msg => {
+        if (msg.screenSpace) return;
+        ctx.save();
+        ctx.globalAlpha = msg.opacity;
+        ctx.fillStyle = msg.color;
+        ctx.font = "14px monospace";
+        ctx.fillText(msg.text, msg.x, msg.y);
+        ctx.restore();
+    });
+
+    damageNumbers.forEach(d => {
+        ctx.save();
+        ctx.globalAlpha = d.opacity;
+        ctx.fillStyle = d.color || "yellow";
+        ctx.font = "12px monospace";
+        ctx.fillText(d.text, d.x, d.y);
+        ctx.restore();
+    });
+
+    leakFlashEffects.forEach(effect => {
+        const lifePct = effect.lifetime / effect.maxLifetime;
+        const radius = effect.radius + (1 - lifePct) * TILE_SIZE * 0.55;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, lifePct * 0.9);
+        ctx.strokeStyle = effect.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(effect.x, effect.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+    });
+    ctx.restore();
+
+    floatingMessages.forEach(msg => {
+        if (!msg.screenSpace) return;
         ctx.save();
         ctx.globalAlpha = msg.opacity;
         ctx.fillStyle = msg.color;
@@ -1711,14 +2834,16 @@ function draw() {
         ctx.save();
         ctx.font = "14px monospace";
         ctx.textAlign = "center";
-
-        const fullText = `${introMessage.type.toUpperCase()}: ${introMessage.text}`;
+        const lines = [
+            introMessage.text,
+            introMessage.counter
+        ];
         const textWidth = Math.max(
-            ctx.measureText("⚠ New Enemy Incoming!").width,
-            ctx.measureText(fullText).width
+            ctx.measureText(introMessage.title || "Sector Briefing").width,
+            ...lines.map(line => ctx.measureText(line).width)
         );
         const boxWidth = textWidth + 20;
-        const boxHeight = 100;
+        const boxHeight = 118;
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
 
@@ -1729,11 +2854,15 @@ function draw() {
         // Text
         ctx.fillStyle = "white";
         ctx.font = "16px monospace";
-        ctx.fillText("⚠ New Enemy Incoming!", centerX, centerY - 20);
+        ctx.fillText(introMessage.title || "Sector Briefing", centerX, centerY - 20);
 
-        ctx.fillStyle = "gold";
+        ctx.fillStyle = introMessage.accent || "gold";
         ctx.font = "14px monospace";
-        ctx.fillText(fullText, centerX, centerY + 10);
+        ctx.fillText(lines[0], centerX, centerY + 2);
+
+        ctx.fillStyle = "#8cd3ff";
+        ctx.font = "13px monospace";
+        ctx.fillText(lines[1], centerX, centerY + 28);
         ctx.restore();
     }
 
@@ -1758,17 +2887,6 @@ function draw() {
         ctx.fillText(`Spread Pool: ${spreadBulletPool.length}`, 12, 135);
 
     }
-    
-        damageNumbers.forEach(d => {
-            ctx.save();
-            ctx.globalAlpha = d.opacity;
-            ctx.fillStyle = d.color || "yellow";
-            ctx.font = "12px monospace";
-            ctx.fillText(d.text, d.x, d.y);
-            ctx.restore();
-        });
-
-
 }
 
 
@@ -1805,7 +2923,7 @@ function update() {
 
     bullets = bullets.filter(b => !b.hit);
     enemies = enemies.filter(e => {
-        if (e.health <= 0) {
+        if (e.health <= 0 || e.defeated) {
             releaseEnemy(e);
             return false;
         }
@@ -1862,21 +2980,28 @@ damageNumbers = damageNumbers.filter(d => d.lifetime > 0);
     });
     floatingMessages = floatingMessages.filter(msg => msg.lifetime > 0);
 
-
+    leakFlashEffects.forEach(effect => {
+        effect.lifetime -= gameSpeed;
+    });
+    leakFlashEffects = leakFlashEffects.filter(effect => effect.lifetime > 0);
 
     // Leaks and lives deduction
-    let leaked = enemies.filter(e => e.pathIndex >= e.path.length - 1);
+    let leaked = enemies.filter(e => e.leaked || e.pathIndex >= e.path.length - 1);
     for (let e of leaked) {
+        if (!e.leaked) {
+            e.leaked = true;
+        }
+        recordLeakEvent(e);
         lives -= ENEMY_STATS[e.type].livesLost || 1;
         releaseEnemy(e); // 🔁 return to pool
     }
-    enemies = enemies.filter(e => e.pathIndex < e.path.length - 1);
+    enemies = enemies.filter(e => !e.leaked && e.pathIndex < e.path.length - 1);
 
 
     // Game Over
     if (lives <= 0 && !gameOver) {
         gameOver = true;
-        showOverlay("💀 Game Over!");
+        showOverlay("💀 Game Over!", buildGameOverSummary());
         return;
     }
 
@@ -1895,6 +3020,8 @@ damageNumbers = damageNumbers.filter(d => d.lifetime > 0);
     // Re-enable start wave button if needed
     if (!isWaveActive && waveQueue.length === 0 && wave < waves.length) {
         startWaveBtn.style.display = "block";
+        if (!waveReadyAt) waveReadyAt = Date.now();
+        refreshStartWaveButton();
     }
 
     updateHUD();
@@ -1939,16 +3066,16 @@ function gameLoop() {
 function startNextWave() {
     if (isWaveActive || wave >= waves.length) return;
 
-    const waveData = waves[wave]; // flat array like ["basic", "fast", "basic"]
+    const waveData = normalizeWaveData(waves[wave]);
     const newTypes = [];
 
-    waveQueue = [...waveData]; // ✅ direct copy of flat array
+    waveQueue = [...waveData.enemies];
 
     // Identify any new enemy types for the intro popup
     waveQueue.forEach(type => {
         if (!seenEnemyTypes.has(type)) {
             seenEnemyTypes.add(type);
-            newTypes.push(type);
+            newTypes.push({ kind: "enemy", type });
         }
     });
 
@@ -1984,52 +3111,176 @@ function showNextIntroMessage() {
     if (waveIntroQueue.length === 0) {
         introMessage = null;
         pausedForIntro = false;
-        isWaveActive = true;
-        waveTimer = 0;
+        isWaveActive = waveQueue.length > 0;
+        if (isWaveActive) {
+            waveTimer = 0;
+        }
         return;
     }
 
-    const nextType = waveIntroQueue.shift();
+    const nextIntro = waveIntroQueue.shift();
 
-    const descriptions = {
-        basic: "Standard enemy. No special abilities.",
-        fast: "Moves quickly. Can slip through defenses!",
-        tank: "High health. Slow but dangerous.",
-        boss: "Massive health. Reaching the end means game over!",
-        megaBoss: "Enormous and slow. Spawns two Bosses when killed!",
-        splitter: "Splits into two mini enemies when killed.",
-        mini: "Small, fast offspring of a splitter.",
-        healer: "Heals nearby enemies slowly over time.",
-        stealth: "Can only be targeted by upgraded towers."
+    if (typeof nextIntro === "string") {
+        waveIntroQueue.unshift({ kind: "enemy", type: nextIntro });
+        showNextIntroMessage();
+        return;
+    }
+
+    if (nextIntro.kind === "map") {
+        introMessage = {
+            title: `📍 ${nextIntro.name}`,
+            text: nextIntro.text,
+            counter: nextIntro.counter,
+            accent: "#9dffbf"
+        };
+        introTimer = 150;
+        return;
+    }
+
+    const guide = ENEMY_GUIDE[nextIntro.type] || {
+        intro: "A new foe approaches!",
+        counter: "Adapt your defenses."
     };
 
     introMessage = {
-        type: nextType,
-        text: descriptions[nextType] || "A new foe approaches!"
+        title: "⚠ New Enemy Incoming!",
+        text: `${nextIntro.type.toUpperCase()}: ${guide.intro}`,
+        counter: `Best Answer: ${guide.counter}`,
+        accent: "gold"
     };
 
     introTimer = 120; // Show for 2 seconds before moving to next
 }
 
-function addFloatingMessage(text, x, y, color = "white") {
+function addFloatingMessage(text, x, y, color = "white", screenSpace = false) {
     floatingMessages.push({
         text,
         x,
         y,
         color,
+        screenSpace,
         lifetime: 60,
         opacity: 1
     });
 }
 
+function normalizeWaveData(waveData) {
+    if (Array.isArray(waveData)) {
+        return {
+            label: "Enemy Surge",
+            advisory: getWaveAdvisory(waveData),
+            enemies: waveData
+        };
+    }
+
+    return {
+        label: waveData?.label || "Enemy Surge",
+        advisory: waveData?.advisory || getWaveAdvisory(waveData?.enemies || []),
+        enemies: waveData?.enemies || []
+    };
+}
+
+function summarizeWaveTypes(types) {
+    if (!types || types.length === 0) return "clear skies";
+
+    const counts = {};
+    types.forEach(type => {
+        counts[type] = (counts[type] || 0) + 1;
+    });
+
+    return Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([type, count]) => `${count} ${ENEMY_GUIDE[type]?.label || type}`)
+        .join(", ");
+}
+
+function getWaveAdvisory(types) {
+    if (!types || types.length === 0) return "Sector clear.";
+
+    const unique = new Set(types);
+    if (unique.has("commander")) return "Watch for support auras.";
+    if (unique.has("bulwark")) return "Watch for damage-reduction auras.";
+    if (unique.has("shield")) return "Watch for shielded fronts.";
+    if (unique.has("resistant")) return "Watch for tower-class resistance.";
+    if (unique.has("stealth")) return "Watch for stealth coverage checks.";
+    if (unique.has("tank") && unique.has("rusher")) return "Watch for split anti-tank and speed pressure.";
+    if (unique.has("bruiser")) return "Watch for heavy anti-tank pressure.";
+    if (unique.has("rusher") || unique.has("mini")) return "Watch for speed pressure.";
+    if (unique.has("tank") || unique.has("boss") || unique.has("megaBoss")) return "Watch for high-health targets.";
+    if (unique.has("splitter")) return "Watch for death spawns.";
+    if (unique.has("healer")) return "Watch for sustain targets.";
+    return "Balanced pressure incoming.";
+}
+
+function getWavePreviewPayload() {
+    if (isWaveActive) {
+        const activeTypes = [...enemies.map(enemy => enemy.type), ...waveQueue];
+        const currentWaveData = normalizeWaveData(waves[Math.max(0, wave - 1)]);
+        return {
+            prefix: "Incoming",
+            summary: `${currentWaveData.label}: ${summarizeWaveTypes(activeTypes)}`,
+            advisory: currentWaveData.advisory || getWaveAdvisory(activeTypes)
+        };
+    }
+
+    if (wave < waves.length) {
+        const nextWave = normalizeWaveData(waves[wave]);
+        return {
+            prefix: "Next",
+            summary: `${nextWave.label}: ${summarizeWaveTypes(nextWave.enemies)}`,
+            advisory: nextWave.advisory
+        };
+    }
+
+    return {
+        prefix: "Status",
+        summary: "final wave cleared",
+        advisory: "Hold the line."
+    };
+}
+
+function hideOverlay() {
+    const overlay = document.getElementById("overlayMessage");
+    if (overlay) {
+        overlay.style.display = "none";
+    }
+}
+
+function returnToMapSelect() {
+    hideOverlay();
+    document.getElementById("gameContainer").style.display = "none";
+    document.getElementById("levelSelector").style.display = "flex";
+    paused = false;
+    pausedForIntro = false;
+    isWaveActive = false;
+    introMessage = null;
+    waveIntroQueue = [];
+    selectedTower = null;
+    selectedTowerType = null;
+    hoveredTower = null;
+    hoveredBuildTile = null;
+    hideTowerActionUI();
+    renderLevelButtons();
+    updateRankDisplay();
+}
+
+function retryCurrentLevel() {
+    hideOverlay();
+    loadLevel(currentLevel);
+}
+
 
 
 function loadLevel(level) {
+    currentLevel = level;
+    hideOverlay();
     
     document.getElementById("levelSelector").style.display = "none";
     document.getElementById("gameContainer").style.display = "block";
 
     const levelData = MAPS[level];
+    const levelMeta = LEVEL_META[level] || { name: `Level ${level}`, intro: "Enemy movement confirmed.", tactic: "Adapt your defense layout." };
     currentMap = levelData.map;
     waves = levelData.waves;
     resizeCanvas(); // ✅ safe to call now that currentMap is defined
@@ -2043,15 +3294,31 @@ function loadLevel(level) {
     bullets = [];
     splitQueue = [];
     wave = 0;
+    gold = STARTING_GOLD;
     lives = 10;
     isWaveActive = false;
+    paused = false;
     gameOver = false;
     gameWon = false;
     waveQueue = [];
     waveTimer = 0;
     seenEnemyTypes.clear();
+    waveIntroQueue = [{
+        kind: "map",
+        name: levelMeta.name,
+        text: levelMeta.intro,
+        counter: levelMeta.tactic
+    }];
+    introMessage = null;
+    introTimer = 0;
+    pausedForIntro = true;
     selectedTower = null;
+    selectedTowerType = null;
     hoveredTower = null;
+    hoveredBuildTile = null;
+    currentWaveStartLives = lives;
+    waveReadyAt = Date.now();
+    pendingRushBonus = calculateRushBonus();
     
     // DEV: Start at a specific wave for testing
     /*
@@ -2063,14 +3330,16 @@ function loadLevel(level) {
         seenEnemyTypes = new Set(); // Clear enemy types to avoid intros
     }*/
 
-    startWaveBtn.style.display = "block";
+    startWaveBtn.style.display = "none";
+    refreshStartWaveButton();
     updateHUD();
+    hideTowerActionUI();
     updateRankDisplay();
     updateTowerButtons();
     renderTowerButtons();
     preallocateAllBulletTypes(250, 100); // More bullets for late-game testing
     preallocateEnemies(200);
-    gameLoop();
+    showNextIntroMessage();
 }
 
 
@@ -2079,49 +3348,51 @@ function unlockAchievement(key, message) {
     if (localStorage.getItem(`achieved_${key}`)) return;
 
     localStorage.setItem(`achieved_${key}`, "true");
-    addFloatingMessage(`🏆 ${message}`, canvas.width / 2, 100, "gold");
+    addFloatingMessage(`🏆 ${message}`, canvas.width / 2, 100, "gold", true);
 
-}
-
-function getUnlockedLevels() {
-  return JSON.parse(localStorage.getItem("unlockedLevels") || "[1]");
-}
-
-function unlockLevel(level) {
-  const unlocked = getUnlockedLevels();
-  if (!unlocked.includes(level)) {
-    unlocked.push(level);
-    localStorage.setItem("unlockedLevels", JSON.stringify(unlocked));
-  }
-}
-
-function evaluateLevelUnlocks(wavesCompleted) {
-  for (const [level, requiredWaves] of Object.entries(LEVEL_UNLOCKS)) {
-    if (wavesCompleted >= requiredWaves) {
-      unlockLevel(parseInt(level));
-    }
-  }
 }
 
 function updateHUD() {
     const displayWave = Math.min(wave, waves.length);
+    const preview = getWavePreviewPayload();
     document.getElementById("goldDisplay").textContent = `💰 ${gold}`;
     document.getElementById("waveDisplay").textContent = `Wave ${displayWave} / ${waves.length}`;
     document.getElementById("livesDisplay").textContent = `❤️ ${lives}`;
+    if (startWaveBtn?.style.display !== "none") {
+        refreshStartWaveButton();
+    }
+    const previewEl = document.getElementById("wavePreviewDisplay");
+    if (previewEl) {
+        previewEl.textContent = `${preview.prefix}: ${preview.summary} | ${preview.advisory}`;
+        previewEl.title = `${preview.prefix}: ${preview.summary}`;
+    }
 }
 
 function towerUpgradeCost(tower) {
     const base = towerCosts[tower.type] || 50;
-    return Math.floor(base * (0.5 + tower.level * 0.6));
+    return Math.floor(base * (0.9 + tower.level * 0.68));
 }
 
-function showOverlay(message) {
+function showOverlay(message, details = []) {
     const overlay = document.getElementById("overlayMessage");
     const text = document.getElementById("overlayText");
-    const btn = document.getElementById("restartBtn");
-    text.textContent = message;
+    const restartBtn = document.getElementById("restartBtn");
+    const mapSelectBtn = document.getElementById("mapSelectBtn");
+    const detailLines = Array.isArray(details) ? details.filter(Boolean) : [details].filter(Boolean);
+    let html = `<div class="overlay-title">${message}</div>`;
+    if (detailLines.length > 0) {
+        html += `<div class="overlay-details">${detailLines.join("<br>")}</div>`;
+    }
+    text.innerHTML = html;
     overlay.style.display = "flex";
-    btn.onclick = () => location.reload();
+    if (restartBtn) {
+        restartBtn.textContent = gameWon ? "Replay Map" : "Retry Map";
+        restartBtn.onclick = () => retryCurrentLevel();
+    }
+    if (mapSelectBtn) {
+        mapSelectBtn.textContent = gameWon ? "Choose Another Map" : "Back to Maps";
+        mapSelectBtn.onclick = () => returnToMapSelect();
+    }
 }
 
 function spawnExplosion(x, y, count = 5) {
@@ -2134,89 +3405,15 @@ function spawnExplosion(x, y, count = 5) {
 }
 
 function showTowerActionUI(tower) {
-    hideTowerActionUI();
-
-    const canvasRect = canvas.getBoundingClientRect();
-    const upgradeCost = towerUpgradeCost(tower);
-    const baseCost = towerCosts[tower.type] || 50;
-    const totalCostInvested = baseCost + (tower.level - 1) * towerUpgradeCost({ type: tower.type, level: tower.level });
-    const sellValue = Math.floor(totalCostInvested * 0.6);
-
-    towerActionUI = document.createElement("div");
-    towerActionUI.style.position = "absolute";
-    towerActionUI.style.padding = "6px";
-    towerActionUI.style.background = "#222";
-    towerActionUI.style.border = "1px solid #888";
-    towerActionUI.style.borderRadius = "6px";
-    towerActionUI.style.color = "#fff";
-    towerActionUI.style.fontFamily = "monospace";
-    towerActionUI.style.fontSize = "12px";
-    towerActionUI.style.zIndex = "1000";
-    towerActionUI.style.maxWidth = "120px";
-
-    // First, temporarily append to calculate size
-    document.body.appendChild(towerActionUI);
-    const panelWidth = towerActionUI.offsetWidth;
-    const panelHeight = towerActionUI.offsetHeight;
-    document.body.removeChild(towerActionUI); // we'll re-append after positioning
-
-    // Default position
-    let left = canvasRect.left + tower.x - panelWidth / 2;
-    let top = canvasRect.top + tower.y + TILE_SIZE / 2;
-
-    const padding = 8;
-    // Clamp to screen edges
-    left = Math.max(padding, Math.min(window.innerWidth - panelWidth - padding, left));
-    top = Math.max(padding, Math.min(window.innerHeight - panelHeight - padding, top));
-
-    towerActionUI.style.left = `${left}px`;
-    towerActionUI.style.top = `${top}px`;
-    
-    const towerName = document.createElement("div");
-    towerName.textContent = tower.type.charAt(0).toUpperCase() + tower.type.slice(1) + " Tower";
-    towerName.style.marginBottom = "6px";
-    towerName.style.fontWeight = "bold";
-    towerName.style.color = "white";
-    towerActionUI.appendChild(towerName);
-
-    const upgradeBtn = document.createElement("button");
-    upgradeBtn.textContent = tower.level >= 5 ? `Max Level (${tower.level})` : `Upgrade ($${upgradeCost})`;
-    upgradeBtn.disabled = tower.level >= 5;
-    upgradeBtn.style.fontSize = "12px";
-    upgradeBtn.style.padding = "4px 6px";
-    upgradeBtn.style.margin = "2px 0";
-    upgradeBtn.onclick = () => {
-        if (gold >= upgradeCost) {
-            tower.upgrade();
-            gold -= upgradeCost;
-            hideTowerActionUI();
-            selectedTower = null;
-        } else {
-            addFloatingMessage("Not enough gold!", tower.x, tower.y, "red");
-        }
-    };
-
-    const sellBtn = document.createElement("button");
-    sellBtn.textContent = `Sell (+$${sellValue})`;
-    sellBtn.style.fontSize = "12px";
-    sellBtn.style.padding = "4px 6px";
-    sellBtn.style.margin = "2px 0";
-    sellBtn.onclick = () => {
-        gold += sellValue;
-        towers = towers.filter(t => t !== tower);
-        hideTowerActionUI();
-    };
-
-    towerActionUI.appendChild(upgradeBtn);
-    towerActionUI.appendChild(sellBtn);
-    document.body.appendChild(towerActionUI);
+    towerDrawerState = { kind: "tower", tower };
+    towerActionUI = tower;
+    updateTowerDrawer();
 }
 
 function hideTowerActionUI() {
-    if (towerActionUI) {
-        document.body.removeChild(towerActionUI);
-        towerActionUI = null;
-    }
+    towerDrawerState = null;
+    towerActionUI = null;
+    updateTowerDrawer();
 }
 
 function toggleSpeed() {
@@ -2226,7 +3423,7 @@ function toggleSpeed() {
 
 function togglePause() {
     paused = !paused;
-    const btn = document.getElementById("pauseToggleBtn");
+    const btn = document.getElementById("pauseBtn");
     if (btn) {
         btn.textContent = paused ? "▶️" : "⏸";
     }
@@ -2247,6 +3444,20 @@ document.addEventListener("click", () => {
     }
 }, { once: true });
 
+function updatePointerHoverState(screenX, screenY) {
+    const worldX = screenX - mapOffsetX;
+    const worldY = screenY - mapOffsetY;
+
+    if (!isInsideMap(worldX, worldY)) {
+        hoveredTower = null;
+        hoveredBuildTile = null;
+        return;
+    }
+
+    hoveredTower = towers.find(t => Math.hypot(t.x - worldX, t.y - worldY) < TILE_SIZE / 2) || null;
+    hoveredBuildTile = getTileAtWorldPosition(worldX, worldY);
+}
+
 // ✅ Add this fallback loop checker AFTER defining sounds.bg
 setInterval(() => {
     if (bgStarted && !sounds.bg.playing()) {
@@ -2259,16 +3470,21 @@ setInterval(() => {
 // Init Events
 canvas.addEventListener("click", (e) => {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+    const x = screenX - mapOffsetX;
+    const y = screenY - mapOffsetY;
 
     const panel = document.getElementById("towerPanel");
     const panelTop = panel.getBoundingClientRect().top;
-    if (y >= panelTop - rect.top) return; // ✅ Block clicks in tower panel area
+    if (screenY >= panelTop - rect.top) return; // ✅ Block clicks in tower panel area
+    if (!isInsideMap(x, y)) return;
 
     // Interact with existing towers
     const clickedTower = towers.find(t => Math.hypot(t.x - x, t.y - y) < TILE_SIZE / 2);
     if (clickedTower) {
+        selectedTowerType = null;
+        updateTowerButtons();
         if (selectedTower === clickedTower) {
             selectedTower = null;
             hideTowerActionUI();
@@ -2293,13 +3509,15 @@ canvas.addEventListener("click", (e) => {
 
     const cost = towerCosts[selectedTowerType];
     if (gold >= cost) {
-        const tileX = Math.floor(x / TILE_SIZE);
-        const tileY = Math.floor(y / TILE_SIZE);
-        const tileType = currentMap[tileY]?.[tileX];
+        const { tileX, tileY } = getTileAtWorldPosition(x, y);
 
-        // Prevent placing on path tiles
-        if (["P", "C", "S", "E", "T"].includes(tileType) || /^P\d+$/.test(tileType)) {
+        if (!canBuildOnTile(tileX, tileY)) {
+            const tileType = currentMap[tileY]?.[tileX];
+            if (isPathTile(tileType)) {
             addFloatingMessage("❌ Can't build on path!", x, y, "orange");
+            } else {
+                addFloatingMessage("❌ Tile occupied!", x, y, "orange");
+            }
             return;
         }
 
@@ -2311,9 +3529,10 @@ canvas.addEventListener("click", (e) => {
 
         // Clear selection after placing
         selectedTowerType = null;
-        document.querySelectorAll("#towerPanel button").forEach(b => b.classList.remove("selected"));
+        updateTowerButtons();
         selectedTower = null;
         hideTowerActionUI();
+        hoveredBuildTile = null;
     } else {
         addFloatingMessage("Not enough gold!", x, y, "red");
     }
@@ -2323,9 +3542,22 @@ canvas.addEventListener("click", (e) => {
 
 canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    hoveredTower = towers.find(t => Math.hypot(t.x - x, t.y - y) < TILE_SIZE / 2) || null;
+    updatePointerHoverState(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+canvas.addEventListener("pointermove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    updatePointerHoverState(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+canvas.addEventListener("mouseleave", () => {
+    hoveredTower = null;
+    hoveredBuildTile = null;
+});
+
+canvas.addEventListener("pointerleave", () => {
+    hoveredTower = null;
+    hoveredBuildTile = null;
 });
 
 function showDevMenu() {
@@ -2363,7 +3595,55 @@ function placeDevTowers() {
 
 function resetDevProgress() {
     localStorage.clear();
+    initializeProgressState();
+    renderLevelButtons();
+    updateRankDisplay();
+    const status = document.getElementById("levelSelectStatus");
+    if (status) {
+      status.textContent = "Progress reset. Only Level 1 is currently available.";
+    }
     alert("🧹 Local storage cleared.");
+}
+
+function createLevelPreviewDataUrl(map) {
+  const rows = map.length;
+  const cols = map[0].length;
+  const previewCanvas = document.createElement("canvas");
+  previewCanvas.width = 120;
+  previewCanvas.height = 72;
+  const previewCtx = previewCanvas.getContext("2d");
+  const tileW = previewCanvas.width / cols;
+  const tileH = previewCanvas.height / rows;
+
+  const colors = {
+    G: "#3fd37e",
+    path: "#c6904d",
+    T: "#2b8a57",
+    S: "#f3d36c",
+    E: "#ff8b6e"
+  };
+
+  previewCtx.fillStyle = "#1a1e1c";
+  previewCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+  map.forEach((row, y) => {
+    row.forEach((tile, x) => {
+      let fill = colors.G;
+      if (/^P\d+$/.test(tile)) fill = colors.path;
+      else if (tile === "T") fill = colors.T;
+      else if (tile === "S") fill = colors.S;
+      else if (tile === "E") fill = colors.E;
+
+      previewCtx.fillStyle = fill;
+      previewCtx.fillRect(x * tileW, y * tileH, tileW + 0.5, tileH + 0.5);
+    });
+  });
+
+  previewCtx.strokeStyle = "rgba(255,255,255,0.18)";
+  previewCtx.lineWidth = 2;
+  previewCtx.strokeRect(1, 1, previewCanvas.width - 2, previewCanvas.height - 2);
+
+  return previewCanvas.toDataURL("image/png");
 }
 
 function renderLevelButtons() {
@@ -2371,37 +3651,73 @@ function renderLevelButtons() {
   container.innerHTML = "";
 
   const unlocked = getUnlockedLevels();
+  const status = document.getElementById("levelSelectStatus");
+  if (status) {
+    const nextUnlock = Object.entries(LEVEL_UNLOCKS)
+      .map(([level, requirement]) => ({ level: parseInt(level, 10), requirement }))
+      .find(entry => !unlocked.includes(entry.level));
+    status.textContent = nextUnlock
+      ? `${unlocked.length} sectors available. ${Math.max(0, nextUnlock.requirement - wavesCompleted)} more waves unlock Level ${nextUnlock.level}.`
+      : `All sectors unlocked. Rank ${playerRank} ${rankTable[playerRank - 1]?.title || ""}`.trim();
+  }
 
   Object.entries(MAPS).forEach(([level, mapData]) => {
+    const levelNumber = parseInt(level, 10);
+    const unlockedLevel = unlocked.includes(levelNumber);
+    const meta = LEVEL_META[levelNumber] || { name: `Level ${level}`, blurb: "Engage enemy formations.", focus: "Defense", waves: mapData.waves.length };
     const btn = document.createElement("button");
-    btn.style.background = "none";
-    btn.style.border = "none";
-    btn.style.position = "relative";
+    btn.className = unlockedLevel ? "level-card" : "level-card level-card--locked";
+    btn.setAttribute("aria-label", meta.name);
 
     const img = document.createElement("img");
-    img.src = `images/maps/level${level}.png`; // You provide this
+    img.src = createLevelPreviewDataUrl(mapData.map);
+    img.className = "level-thumbnail";
     img.style.width = "100px";
-    img.style.height = "auto";
+    img.style.height = "60px";
     img.style.borderRadius = "8px";
-    img.style.opacity = unlocked.includes(parseInt(level)) ? "1" : "0.4";
+    img.style.objectFit = "cover";
+    img.style.opacity = unlockedLevel ? "1" : "0.4";
 
-    if (!unlocked.includes(parseInt(level))) {
+    if (!unlockedLevel) {
       const lockIcon = document.createElement("div");
+      lockIcon.className = "level-lock";
       lockIcon.textContent = "🔒";
-      lockIcon.style.position = "absolute";
-      lockIcon.style.top = "24px";
-      lockIcon.style.right = "86px";
-      lockIcon.style.fontSize = "18px";
-      lockIcon.style.color = "red";
       btn.appendChild(lockIcon);
     } else {
-      btn.onclick = () => loadLevel(parseInt(level));
+      btn.onclick = () => loadLevel(levelNumber);
     }
 
+    const badge = document.createElement("div");
+    badge.className = "level-card__badge";
+    badge.textContent = `Lv ${level}`;
+
+    const body = document.createElement("div");
+    body.className = "level-card__body";
+
+    const title = document.createElement("div");
+    title.className = "level-card__title";
+    title.textContent = meta.name;
+
+    const desc = document.createElement("div");
+    desc.className = "level-card__desc";
+    desc.textContent = unlockedLevel ? meta.blurb : `Unlock at ${LEVEL_UNLOCKS[levelNumber]} completed waves.`;
+
+    const metaRow = document.createElement("div");
+    metaRow.className = "level-card__meta";
+    metaRow.innerHTML = `<span>${meta.focus}</span><span>${meta.waves} waves</span>`;
+
     btn.appendChild(img);
+    btn.appendChild(badge);
+    body.appendChild(title);
+    body.appendChild(desc);
+    body.appendChild(metaRow);
+    btn.appendChild(body);
     container.appendChild(btn);
   });
 }
 
+initializeProgressState();
+renderLevelButtons();
+updateRankDisplay();
 
 gameLoop();
