@@ -203,6 +203,7 @@ let mapOffsetY = 0;
 // Required UI Elements
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 const speedBtn = document.getElementById("speedToggleBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const achievementBox = document.getElementById("achievements");
