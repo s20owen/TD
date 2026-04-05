@@ -763,10 +763,18 @@ function buildWaveScenario(waveNumber, totalWaves) {
     let scenario = getBaseWaveLabel(waveNumber);
 
     if (waveNumber === totalWaves) {
-        enemyQueue.push("megaBoss");
+        enemyQueue.length = 0;
+        enemyQueue.push(
+            "shield", "fast", "rusher",
+            "tank", "basic", "basic",
+            "relay", "healer",
+            "megaBoss",
+            "bulwark", "commander",
+            "shield", "tank", "phaser"
+        );
         scenario = {
             label: "Final Stand",
-            advisory: "Mega boss pressure. Bring boss damage and enough control to survive the split."
+            advisory: "Mega boss pressure with a compact support escort. Bring boss damage and enough control to survive the split."
         };
     } else if (waveNumber >= 20 && waveNumber % 10 === 0) {
         enemyQueue.push("boss", "shield", "tank");
@@ -3902,9 +3910,9 @@ function startNextWave() {
     wave++; // Increment wave number
 
     // Boss warning logic
-    if (waveQueue.includes("boss")) {
+    if (waveQueue.includes("boss") || waveQueue.includes("megaBoss")) {
         bossWarning = {
-            text: "⚠ Incoming Boss!",
+            text: waveQueue.includes("megaBoss") ? "💀 MEGA BOSS INCOMING!" : "⚠ Incoming Boss!",
             time: 120,
             shake: true
         };

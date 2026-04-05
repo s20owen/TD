@@ -93,7 +93,7 @@ button:disabled {
   top: 0;
   left: 0;
   width: 100%;
-  height: 76px;
+  min-height: 76px;
   background: #111;
   display: flex;
   justify-content: space-between;
@@ -125,6 +125,66 @@ button:disabled {
   text-overflow: ellipsis;
   padding: 0 8px 2px;
   box-sizing: border-box;
+}
+
+.wave-planner {
+  flex: 1 0 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0 8px 6px;
+  box-sizing: border-box;
+}
+
+.wave-planner__item {
+  min-width: 0;
+  padding: 6px 7px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.wave-planner__item--active {
+  background: rgba(122, 198, 255, 0.12);
+  border-color: rgba(122, 198, 255, 0.35);
+}
+
+.wave-planner__item--upcoming {
+  background: rgba(143, 211, 255, 0.08);
+}
+
+.wave-planner__step {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8fd3ff;
+}
+
+.wave-planner__title {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #fff5c2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wave-planner__special {
+  margin-top: 3px;
+  font-size: 10px;
+  color: #ffde85;
+}
+
+.wave-planner__mix,
+.wave-planner__advisory {
+  margin-top: 3px;
+  font-size: 10px;
+  line-height: 1.3;
+  color: #cfdae2;
+}
+
+.wave-planner__advisory {
+  color: #9fd8ff;
 }
 #hudBar button {
   font-size: 10px;
@@ -555,6 +615,51 @@ button:disabled {
   min-height: 32px;
 }
 
+.level-card__modifier {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #9fe7c4;
+}
+
+.level-card__honors {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #f6dda2;
+}
+
+.level-card__honors-label {
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.level-card__honors-icons {
+  display: inline-flex;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.level-card__honors-icons span {
+  opacity: 0.28;
+  filter: grayscale(0.9);
+}
+
+.level-card__honors-icons span.is-earned {
+  opacity: 1;
+  filter: none;
+}
+
+.level-card__record {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #b8c7cf;
+}
+
 .level-card__meta {
   display: flex;
   justify-content: space-between;
@@ -581,12 +686,17 @@ button:disabled {
 }
 
 .level-card--locked .level-card__title,
-.level-card--locked .level-card__desc {
+.level-card--locked .level-card__desc,
+.level-card--locked .level-card__record {
   color: #a8b0b5;
 }
 
 .level-card--locked .level-card__meta {
   color: #d6ab73;
+}
+
+.level-card--locked .level-card__honors {
+  color: #b8a98c;
 }
 
 @media (max-width: 700px) {
