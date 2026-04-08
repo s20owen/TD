@@ -200,6 +200,9 @@ document.getElementById("darkOpsBtn").addEventListener("click", () => {
         DEV_MODE = true;
         //alert("✅ DEV MODE UNLOCKED");
         showDevMenu();
+        updateTowerButtons();
+        renderTowerButtons();
+        renderLevelButtons();
     } else {
         alert("❌ Incorrect password");
     }
@@ -307,6 +310,7 @@ let activeMapModifier = null;
 let activeWaveRules = null;
 let towerDrawerState = null;
 let mapProgressRecords = {};
+let devSettingsPending = false;
 let screenShake = 0;
 let screenFlash = { color: "255,255,255", alpha: 0 };
 let waveBanner = null;
@@ -666,6 +670,11 @@ function calculateRushBonus() {
 
 function refreshStartWaveButton() {
     if (!startWaveBtn) return;
+    if (devSettingsPending) {
+        pendingRushBonus = 0;
+        startWaveBtn.textContent = "Start Wave";
+        return;
+    }
     pendingRushBonus = calculateRushBonus();
     startWaveBtn.textContent = pendingRushBonus > 0 ? `Start Wave (+$${pendingRushBonus})` : "Start Wave";
 }
@@ -2070,7 +2079,7 @@ function showTowerTypeDrawer(type) {
 updateTowerButtons();
 
 document.getElementById("startWaveBtn").onclick = () => {
-    const rushBonus = calculateRushBonus();
+    const rushBonus = devSettingsPending ? 0 : calculateRushBonus();
     if (rushBonus > 0) {
         gold += rushBonus;
         runRushBonusTotal += rushBonus;
@@ -2083,6 +2092,7 @@ document.getElementById("startWaveBtn").onclick = () => {
     waveReadyAt = 0;
     pendingRushBonus = 0;
     startNextWave();
+    devSettingsPending = false;
     document.getElementById("startWaveBtn").style.display = "none";
 };
 
@@ -3922,8 +3932,8 @@ function startNextWave() {
         newTypes.unshift({ kind: "round", roundId: waveData.specialRound });
     }
 
-    // If there are new enemies to show, pause for intro
-    if (newTypes.length > 0) {
+    // If there are new enemies to show, pause for intro. Dev mode skips this so wave overrides start immediately.
+    if (newTypes.length > 0 && !DEV_MODE) {
         waveIntroQueue = newTypes;
         introMessage = null;
         introTimer = 0;
@@ -4337,7 +4347,9 @@ function unlockAchievement(key, message) {
 }
 
 function updateHUD() {
-    const displayWave = Math.min(wave, waves.length);
+    const displayWave = isWaveActive || pausedForIntro
+        ? Math.min(wave, waves.length)
+        : Math.min(wave + 1, waves.length);
     const preview = getWavePreviewPayload();
     document.getElementById("goldDisplay").textContent = `💰 ${gold}`;
     document.getElementById("waveDisplay").textContent = `Wave ${displayWave} / ${waves.length}`;
@@ -4548,34 +4560,75 @@ function showDevMenu() {
 }
 
 function applyDevSettings() {
-    const goldVal = parseInt(document.getElementById("devGold").value);
-    const waveVal = parseInt(document.getElementById("devWave").value);
-    gold = goldVal;
-    wave = waveVal - 1;
-    seenEnemyTypes.clear();
-    //alert("⚙️ Settings applied. Start wave manually.");
+    const goldVal = parseInt(document.getElementById("devGold").value, 10);
+    const waveVal = parseInt(document.getElementById("devWave").value, 10);
+    if (!waves.length) {
+        loadLevel(currentLevel || 1);
+    }
+    const maxWave = Math.max(1, waves.length || 1);
+    const targetWave = Math.min(maxWave, Math.max(1, Number.isFinite(waveVal) ? waveVal : 1));
+
+    gold = Number.isFinite(goldVal) ? goldVal : STARTING_GOLD;
+    wave = targetWave - 1;
+    enemies = [];
+    bullets = [];
+    splitQueue = [];
+    waveQueue = [];
+    waveTimer = 0;
+    activeWaveRules = null;
+    bossWarning = null;
+    isWaveActive = false;
+    paused = false;
+    pausedForIntro = false;
+    introMessage = null;
+    waveIntroQueue = [];
+    currentWaveStartLives = lives;
+    waveReadyAt = 0;
+    pendingRushBonus = 0;
+    devSettingsPending = true;
+    Object.keys(ENEMY_GUIDE).forEach(type => seenEnemyTypes.add(type));
+
+    if (startWaveBtn) {
+        startWaveBtn.style.display = wave < waves.length ? "block" : "none";
+        startWaveBtn.textContent = "Start Wave";
+    }
+    updateHUD();
+    if (startWaveBtn && startWaveBtn.style.display !== "none") {
+        startWaveBtn.textContent = "Start Wave";
+    }
+    addFloatingMessage(`Dev set: Wave ${targetWave}, $${gold}`, canvas.width / 2, 82, "#7ce8ff", true);
 }
 
 function placeDevTowers() {
-    const positions = [
-        { x: 4, y: 4 },
-        { x: 6, y: 6 },
-        { x: 8, y: 8 },
-        { x: 10, y: 5 }
-    ];
+    if (!currentMap?.length) {
+        alert("Load a map before placing dev towers.");
+        return;
+    }
 
-    positions.forEach((pos, i) => {
-        const centerX = pos.x * TILE_SIZE + TILE_SIZE / 2;
-        const centerY = pos.y * TILE_SIZE + TILE_SIZE / 2;
-        const type = towerTypes[i % towerTypes.length];
+    let placed = 0;
+    const buildTiles = [];
+    for (let y = 0; y < currentMap.length; y++) {
+        for (let x = 0; x < currentMap[y].length; x++) {
+            if (canBuildOnTile(x, y)) buildTiles.push({ x, y });
+        }
+    }
+
+    towerTypes.forEach((type, index) => {
+        const tile = buildTiles[index * 2] || buildTiles[index];
+        if (!tile) return;
+        const centerX = tile.x * TILE_SIZE + TILE_SIZE / 2;
+        const centerY = tile.y * TILE_SIZE + TILE_SIZE / 2;
         const tower = new Tower(centerX, centerY, type);
         tower.level = 5;
         tower.branch = "alpha";
+        tower.purchaseCost = 0;
         tower.refreshStats();
         towers.push(tower);
+        placed++;
     });
 
-    alert("🏗️ Maxed towers placed.");
+    updateHUD();
+    addFloatingMessage(`Dev placed ${placed} max towers`, canvas.width / 2, 102, "#8cffb5", true);
 }
 
 function resetDevProgress() {
